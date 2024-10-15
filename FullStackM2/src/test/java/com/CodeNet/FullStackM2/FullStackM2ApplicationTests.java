@@ -1,10 +1,10 @@
-package com.fullStack_SAIDOUN.M2_Full_Stack_SAIDOUN;
+package com.CodeNet.FullStackM2;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class M2FullStackSaidounApplicationTests {
+class FullStackM2ApplicationTests {
 
 	@Test
 	void contextLoads() {
