@@ -1,7 +1,7 @@
-package Controller;
+package com.CodeNet.FullStackM2.Controller;
 
-import Entity.Category;
-import Service.CategoryService;
+import com.CodeNet.FullStackM2.Entity.Category;
+import com.CodeNet.FullStackM2.Service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +21,12 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id")
+    @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
         return new ResponseEntity<>(categoryService.updateCategory(id, category.getNom(), category.getParentCategory() != null ? category.getParentCategory().getId() : null), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

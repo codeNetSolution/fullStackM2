@@ -1,4 +1,4 @@
-package Entity;
+package com.CodeNet.FullStackM2.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

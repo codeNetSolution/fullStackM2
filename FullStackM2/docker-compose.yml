@@ -1,0 +1,21 @@
+services:
+  db:
+    image: mysql:9.1.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: categories_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "9001:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:

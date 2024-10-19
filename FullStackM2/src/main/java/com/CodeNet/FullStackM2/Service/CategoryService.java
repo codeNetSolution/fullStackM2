@@ -1,8 +1,8 @@
-package Service;
+package com.CodeNet.FullStackM2.Service;
 
 
-import Entity.Category;
-import Repository.CategoryRepository;
+import com.CodeNet.FullStackM2.Entity.Category;
+import com.CodeNet.FullStackM2.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
