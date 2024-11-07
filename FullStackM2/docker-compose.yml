@@ -1,12 +1,11 @@
 services:
   db:
-    image: mysql:9.1.0
-    container_name: mysql-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: categories_db
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+    build:
+      context: DB
+      dockerfile: Dockerfile
+    image: mysql-db
+    env_file:
+      - .env
     ports:
       - "9001:3306"
     volumes:

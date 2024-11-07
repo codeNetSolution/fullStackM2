@@ -1,1 +1,16 @@
-<p>category-form works!</p>
+<h2>{{ isEditMode ? 'Modifier la Catégorie' : 'Créer une Nouvelle Catégorie' }}</h2>
+
+<form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+        <label for="nom">Nom de la catégorie</label>
+        <input id="nom" formControlName="nom" class="form-control">
+        <div *ngIf="categoryForm.get('nom')?.invalid && categoryForm.get('nom')?.touched" class="text-danger">
+            Le nom est requis.
+          </div>
+    </div>
+      
+    <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
+    </button>
+    <a routerLink="/categories" class="btn btn-secondary">Annuler</a>
+</form>

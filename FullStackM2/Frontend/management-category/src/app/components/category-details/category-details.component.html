@@ -1,1 +1,9 @@
-<p>category-details works!</p>
+<h2>Détails de la Catégorie</h2>
+
+<div *ngIf="category">
+  <p><strong>ID:</strong> {{ category.id }}</p>
+  <p><strong>Nom:</strong> {{ category.nom }}</p>
+  <p><strong>Date de Création:</strong> {{ category.createdAt | date:'short' }}</p>
+</div>
+
+<a routerLink="/categories" class="btn btn-secondary">Retour à la Liste</a>

@@ -17,7 +17,7 @@ public class Category {
     private String nom;
 
     @ManyToOne
-    @JoinColumn(name = "parend_id")
+    @JoinColumn(name = "parent_id")
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
