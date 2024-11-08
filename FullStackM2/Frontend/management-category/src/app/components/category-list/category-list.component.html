@@ -17,7 +17,7 @@
       <td>
         <a routerLink="/category/{{category.id}}" class="btn btn-info">Détails</a>
         <a routerLink="/category/edit/{{category.id}}" class="btn btn-warning">Modifier</a>
-        <button (click)="deleteCategory(category.id)" class="btn btn-danger">Supprimer</button>
+        <button *ngIf="category.id != null" (click)="deleteCategory(category.id)" class="btn btn-danger">Supprimer</button>
       </td>
     </tr>
   </tbody>

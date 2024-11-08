@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../services/category.service';
-import { Category } from '../../models/category';
+import { Category } from '../../models/category.model';
 
 @Component({
   selector: 'app-category-form',
   standalone: true, 
-  imports: [ReactiveFormsModule, RouterModule], 
+  imports: [HttpClientModule,ReactiveFormsModule, RouterModule, CommonModule],
   templateUrl: './category-form.component.html',
   styleUrls: ['./category-form.component.css']
 })
