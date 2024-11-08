@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Category } from '../../models/category.model';
-import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CategoryService } from '../../services/category.service';
@@ -9,7 +8,7 @@ import { CategoryService } from '../../services/category.service';
   selector: 'app-category-list',
   standalone: true,
   templateUrl: './category-list.component.html',
-  imports: [HttpClientModule,RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule],
   styleUrl: './category-list.component.css'
 })
 export class CategoryListComponent implements OnInit {
