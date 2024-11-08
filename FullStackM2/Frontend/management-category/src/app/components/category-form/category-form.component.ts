@@ -44,17 +44,22 @@ export class CategoryFormComponent implements OnInit {
     if (this.categoryForm.invalid) {
       return;
     }
-
+  
     const category: Category = this.categoryForm.value;
-
+  
     if (this.isEditMode && this.categoryId) {
-      this.categoryService.updateCategory(this.categoryId, category).subscribe(() => {
-        this.router.navigate(['/categories']);
+      // Mode édition
+      this.categoryService.updateCategory(this.categoryId, category).subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: (error) => console.error('Erreur lors de la mise à jour de la catégorie', error)
       });
     } else {
-      this.categoryService.createCategory(category).subscribe(() => {
-        this.router.navigate(['/categories']);
+      // Mode création
+      this.categoryService.createCategory(category).subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: (error) => console.error('Erreur lors de la création de la catégorie', error)
       });
     }
   }
+  
 }
