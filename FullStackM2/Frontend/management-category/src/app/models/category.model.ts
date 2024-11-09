@@ -1,7 +1,12 @@
-export interface Category {
-    id?: number;
-    nom: string;
-    parentCategory?: Category;
-    childCategories?: Category[];
-    createdAt?: Date;
+// category.model.ts
+export class Category {
+  id?: number;
+  nom: string;
+  parentId?: number;
+  childCategories?: Category[];
+
+  constructor() {
+    this.nom = '';
+    this.childCategories = [];
+  }
 }

@@ -1,16 +1,9 @@
-<h2>{{ isEditMode ? 'Modifier la Catégorie' : 'Créer une Nouvelle Catégorie' }}</h2>
-
-<form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-        <label for="nom">Nom de la catégorie</label>
-        <input id="nom" formControlName="nom" class="form-control">
-        <div *ngIf="categoryForm.get('nom')?.invalid && categoryForm.get('nom')?.touched" class="text-danger">
-            Le nom est requis.
-          </div>
-    </div>
-      
-    <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">
-        {{ isEditMode ? 'Modifier' : 'Créer' }}
-    </button>
-    <a routerLink="/categories" class="btn btn-secondary">Annuler</a>
-</form>
+<div>
+    <h2>{{ category.id ? 'Modifier' : 'Créer' }} une Catégorie</h2>
+    <form (ngSubmit)="saveCategory()">
+      <label for="nom">Nom de la catégorie:</label>
+      <input id="nom" [(ngModel)]="category.nom" name="nom" required />
+      <button type="submit">{{ category.id ? 'Modifier' : 'Créer' }}</button>
+    </form>
+  </div>
+  

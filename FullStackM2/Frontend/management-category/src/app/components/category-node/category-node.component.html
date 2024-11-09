@@ -1,0 +1,14 @@
+<li>
+    {{ category.nom }}
+    <a [routerLink]="['/details', category.id]">Détails</a>
+    <a [routerLink]="['/modify', category.id]">Modifier</a>
+    <button (click)="deleteCategory(category.id)">Supprimer</button>
+  
+    <!-- Recursive display for child categories -->
+    <ul *ngIf="category.childCategories && category.childCategories.length">
+      <ng-container *ngFor="let child of category.childCategories">
+        <app-category-node [category]="child"></app-category-node>
+      </ng-container>
+    </ul>
+  </li>
+  

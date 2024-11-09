@@ -1,24 +1,40 @@
-<h2>Liste des Catégories</h2>
+<div>
+  <h2>Liste des Catégories</h2>
+  <button (click)="navigateToCreate()">Créer une nouvelle catégorie</button>
+  <ul>
+    <li *ngFor="let category of categories">
+      {{ category.nom }}
+      <a [routerLink]="['/category', category.id]">Détails</a>
+      <a [routerLink]="['/category/edit', category.id]">Modifier</a>
+      <button (click)="deleteCategory(category.id)">Supprimer</button>
 
-<a routerLink="/category/new" class="btn btn-primary">Ajouter une nouvelle catégorie</a>
+      <!-- Affichage récursif des catégories enfants -->
+      <ul *ngIf="category.childCategories && category.childCategories.length">
+        <li *ngFor="let child of category.childCategories">
+          {{ child.nom }}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nom</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let category of categories">
-      <td>{{ category.id }}</td>
-      <td>{{ category.nom }}</td>
-      <td>
-        <a routerLink="/category/{{category.id}}" class="btn btn-info">Détails</a>
-        <a routerLink="/category/edit/{{category.id}}" class="btn btn-warning">Modifier</a>
-        <button *ngIf="category.id != null" (click)="deleteCategory(category.id)" class="btn btn-danger">Supprimer</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<!-- Section d'association parent-enfant -->
+<div>
+  <h3>Associer une catégorie parent avec un enfant</h3>
+
+  <select [(ngModel)]="selectedParentId">
+    <option [value]="undefined">Sélectionnez un parent</option>
+    <option *ngFor="let category of categories" [value]="category.id">
+      {{ category.nom }}
+    </option>
+  </select>
+
+  <select [(ngModel)]="selectedChildId">
+    <option [value]="undefined">Sélectionnez un enfant</option>
+    <option *ngFor="let category of categories" [value]="category.id">
+      {{ category.nom }}
+    </option>
+  </select>
+
+  <button (click)="associateParentWithChild()">Associer</button>
+</div>

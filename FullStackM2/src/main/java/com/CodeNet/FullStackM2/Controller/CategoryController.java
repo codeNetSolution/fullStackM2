@@ -1,5 +1,6 @@
 package com.CodeNet.FullStackM2.Controller;
 
+import com.CodeNet.FullStackM2.DTO.CategoryDTO;
 import com.CodeNet.FullStackM2.Entity.Category;
 import com.CodeNet.FullStackM2.Service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/app/v1/category")
@@ -22,8 +24,8 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        return new ResponseEntity<>(categoryService.updateCategory(id, category.getNom(), category.getParentCategory() != null ? category.getParentCategory().getId() : null), HttpStatus.OK);
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) throws Exception {
+        return new ResponseEntity<>(categoryService.updateCategory(id, category.getNom(), null), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -33,24 +35,26 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories(@RequestParam int page, @RequestParam int size) {
-        return new ResponseEntity<>(categoryService.getAllCategoriesPaginated(page, size), HttpStatus.OK);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Category>> searchCategories(@RequestParam String filter) {
-        return new ResponseEntity<>(categoryService.searchCategoriesWithFilter(filter), HttpStatus.OK);
-    }
-
-    @GetMapping("/sort")
-    public ResponseEntity<List<Category>> getAllCategoriesSorted(@RequestParam String field, @RequestParam String direction) {
-        return new ResponseEntity<>(categoryService.getAllCategoriesSorted(field, direction), HttpStatus.OK);
+    public ResponseEntity<List<CategoryDTO>> getAllCategories(@RequestParam int page, @RequestParam int size) {
+        List<CategoryDTO> categories = categoryService.getAllCategoriesPaginated(page, size).stream()
+                .map(categoryService::convertToDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryDetails(@PathVariable Long id) {
-        return new ResponseEntity<>(categoryService.getCategoryDetails(id), HttpStatus.OK);
+    public ResponseEntity<CategoryDTO> getCategoryDetails(@PathVariable Long id) {
+        CategoryDTO categoryDTO = categoryService.convertToDTO(categoryService.getCategoryDetails(id));
+        return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
 
-
+    @PutMapping("/{parentId}/associate/{childId}")
+    public ResponseEntity<String> associateParentWithChild(@PathVariable Long parentId, @PathVariable Long childId) {
+        try {
+            categoryService.associateParentWithChild(parentId, childId);
+            return ResponseEntity.ok("Association réussie entre la catégorie parent et enfant");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur lors de l'association: " + e.getMessage());
+        }
+    }
 }

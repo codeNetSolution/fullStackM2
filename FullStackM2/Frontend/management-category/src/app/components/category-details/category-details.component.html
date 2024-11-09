@@ -1,9 +1,17 @@
-<h2>Détails de la Catégorie</h2>
-
 <div *ngIf="category">
-  <p><strong>ID:</strong> {{ category.id }}</p>
+  <h2>Détails de la Catégorie</h2>
   <p><strong>Nom:</strong> {{ category.nom }}</p>
-  <p><strong>Date de Création:</strong> {{ category.createdAt | date:'short' }}</p>
+  
+  <!-- Display the parent category if it exists -->
+  <div *ngIf="parentCategory">
+    <p><strong>Catégorie Parent:</strong> {{ parentCategory.nom }}</p>
+  </div>
+  
+  <!-- Display child categories if they exist -->
+  <div *ngIf="category.childCategories && category.childCategories.length > 0">
+    <h3>Catégories Enfants</h3>
+    <ul>
+      <li *ngFor="let child of category.childCategories">{{ child.nom }}</li>
+    </ul>
+  </div>
 </div>
-
-<a routerLink="/categories" class="btn btn-secondary">Retour à la Liste</a>
