@@ -3,6 +3,7 @@ package com.CodeNet.FullStackM2.Controller;
 import com.CodeNet.FullStackM2.DTO.CategoryDTO;
 import com.CodeNet.FullStackM2.Entity.Category;
 import com.CodeNet.FullStackM2.Service.CategoryService;
+import com.CodeNet.FullStackM2.utils.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,12 +50,12 @@ public class CategoryController {
     }
 
     @PutMapping("/{parentId}/associate/{childId}")
-    public ResponseEntity<String> associateParentWithChild(@PathVariable Long parentId, @PathVariable Long childId) {
+    public ResponseEntity<ResponseMessage> associateParentWithChild(@PathVariable Long parentId, @PathVariable Long childId) {
         try {
             categoryService.associateParentWithChild(parentId, childId);
-            return ResponseEntity.ok("Association réussie entre la catégorie parent et enfant");
+            return ResponseEntity.ok(new ResponseMessage("Association réussie entre la catégorie parent et enfant"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erreur lors de l'association: " + e.getMessage());
+            return ResponseEntity.badRequest().body(new ResponseMessage("Erreur lors de l'association: " + e.getMessage()));
         }
     }
 }

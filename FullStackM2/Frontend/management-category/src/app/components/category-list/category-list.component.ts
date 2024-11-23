@@ -1,63 +1,46 @@
-// src/app/components/category-list/category-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router'; // Import du RouterModule
 
 @Component({
   selector: 'app-category-list',
   standalone: true,
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.css'],
-  imports: [CommonModule, FormsModule, RouterModule]
+  imports: [CommonModule, FormsModule, RouterModule] // Ajout de RouterModule ici
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
-  selectedParentId?: number; // Ajout de la propriété selectedParentId
-  selectedChildId?: number; // Ajout de la propriété selectedChildId
-
-  page: number = 1;  // Page par défaut
+  selectedParentId?: number;
+  selectedChildId?: number;
+  page: number = 1;
   size: number = 10;
 
-  constructor(
-    private categoryService: CategoryService,
-    private router: Router
-  ) {}
+  constructor(private categoryService: CategoryService, private router: Router) {}
 
   ngOnInit(): void {
-    this.getCategories();
-  }
+    // S'abonner à l'Observable categories$ pour les mises à jour en temps réel
+    this.categoryService.categories$.subscribe((data) => {
+      this.categories = data;
+    });
 
-  getCategories(): void {
-    this.categoryService.getAllCategories(this.page - 1, this.size).subscribe(
-      (data) => (this.categories = data),
-      (error) => console.error('Erreur lors de la récupération des catégories', error)
-    );
+    // Charger les catégories initiales
+    this.categoryService.getAllCategories(this.page - 1, this.size).subscribe();
   }
 
   deleteCategory(id?: number): void {
     if (id !== undefined) {
-      this.categoryService.deleteCategory(id).subscribe(() => {
-        this.getCategories(); // Recharge les catégories après la suppression
-      });
-    } else {
-      console.error("L'ID de la catégorie est indéfini.");
+      this.categoryService.deleteCategory(id).subscribe();
     }
   }
 
   associateParentWithChild(): void {
     if (this.selectedParentId && this.selectedChildId) {
-      this.categoryService.associateParentWithChild(this.selectedParentId, this.selectedChildId).subscribe({
-        next: () => {
-          console.log('Association réussie');
-          this.getCategories(); // Recharge les catégories après l'association
-        },
-        error: (error) => console.error("Erreur lors de l'association", error)
-      });
-    } else {
-      console.error('Veuillez sélectionner un parent et un enfant');
+      this.categoryService.associateParentWithChild(this.selectedParentId, this.selectedChildId).subscribe();
     }
   }
 

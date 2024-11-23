@@ -1,12 +1,19 @@
 package com.CodeNet.FullStackM2.DTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 public class CategoryDTO {
     private Long id;
     private String nom;
     private Long parentId;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CategoryDTO> childCategories;
+
+
+
 
     // Constructeur
     public CategoryDTO(Long id, String nom, Long parentId) {
@@ -14,6 +21,8 @@ public class CategoryDTO {
         this.nom = nom;
         this.parentId = parentId;
     }
+
+
 
     // Getters et Setters
     public Long getId() {
