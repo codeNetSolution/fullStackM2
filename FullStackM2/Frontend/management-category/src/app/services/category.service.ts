@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpParams  } from '@angular/common/http';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { Category } from '../models/category.model';
-import { tap } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,35 @@ export class CategoryService {
       tap((categories) => this.categoriesSubject.next(categories))
     );
   }
+
+  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string): Observable<Category[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+  
+    if (name) {
+      params = params.append('name', name);
+    }
+    if (creationDate) {
+      console.log('Sending creationDate:', creationDate);
+      params = params.append('creationDate', creationDate);
+    }
+
+    console.log("params", params);
+  
+    return this.http.get<any>(`${this.apiUrl}/filtered`, { params }).pipe(
+      tap(data => console.log('Filtered categories data:', data)),
+      map(data => data.content || []), 
+      catchError(error => {
+        console.error('Error fetching filtered categories:', error);
+        return of([]); 
+      })
+    );
+  }
+  
+  
+
+
 
   createCategory(category: Category): Observable<Category> {
     return this.http.post<Category>(this.apiUrl, category).pipe(

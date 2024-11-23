@@ -1,7 +1,19 @@
 <div>
   <h2>Liste des Catégories</h2>
   <button (click)="navigateToCreate()">Créer une nouvelle catégorie</button>
-  <ul>
+  
+  <!-- Filter Section -->
+  <div>
+    <input type="text" [(ngModel)]="nameFilter" (input)="loadFilteredCategories()" placeholder="Filtrer par nom">
+    <input type="date" [(ngModel)]="creationDateFilter" (change)="loadFilteredCategories()" placeholder="À partir de la date">
+  </div>
+
+  <div *ngIf="noResultsFound" class="no-results-message">
+    <p>Aucune catégorie trouvée pour les critères sélectionnés.</p>
+  </div>
+
+  
+  <ul *ngIf="!noResultsFound">
     <li *ngFor="let category of categories">
       {{ category.nom }}
       <a [routerLink]="['/category', category.id]">Détails</a>

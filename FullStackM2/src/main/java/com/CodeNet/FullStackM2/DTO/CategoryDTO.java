@@ -2,12 +2,15 @@ package com.CodeNet.FullStackM2.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Date;
 import java.util.List;
 
 public class CategoryDTO {
     private Long id;
     private String nom;
     private Long parentId;
+    private Date creationDate;
+    private boolean isRoot;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CategoryDTO> childCategories;
@@ -16,10 +19,13 @@ public class CategoryDTO {
 
 
     // Constructeur
-    public CategoryDTO(Long id, String nom, Long parentId) {
+    public CategoryDTO(Long id, String nom, Date creationDate, Long parentId, List<CategoryDTO> childCategories, boolean isRoot) {
         this.id = id;
         this.nom = nom;
         this.parentId = parentId;
+        this.creationDate = creationDate;
+        this.childCategories = childCategories;
+        this.isRoot = parentId == null;
     }
 
 
@@ -56,4 +62,12 @@ public class CategoryDTO {
     public void setChildCategories(List<CategoryDTO> childCategories) {
         this.childCategories = childCategories;
     }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
 }

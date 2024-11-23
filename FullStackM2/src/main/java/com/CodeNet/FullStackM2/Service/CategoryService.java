@@ -6,8 +6,16 @@ import com.CodeNet.FullStackM2.Entity.CategoryHierarchy;
 import com.CodeNet.FullStackM2.Repository.CategoryRepository;
 import com.CodeNet.FullStackM2.Repository.CategoryHierarchyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +28,29 @@ public class CategoryService {
 
     @Autowired
     private CategoryHierarchyRepository categoryHierarchyRepository;
+
+    public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter, String dateFilter) {
+        Pageable pageable = PageRequest.of(page, size);
+        Date startOfDay = null;
+        Date startOfNextDay = null;
+
+        try {
+            if (dateFilter != null && !dateFilter.isEmpty()) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                startOfDay = dateFormat.parse(dateFilter);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(startOfDay);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                startOfNextDay = calendar.getTime();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return categoryRepository.findByFilters(nameFilter, startOfDay, startOfNextDay, pageable)
+                .map(this::convertToDTO);
+    }
+
+
 
     public Category createCategory(Category category) {
         return categoryRepository.save(category);
@@ -35,7 +66,14 @@ public class CategoryService {
                 .map(ch -> ch.getParentCategory().getId())
                 .orElse(null);
 
-        CategoryDTO categoryDTO = new CategoryDTO(category.getId(), category.getNom(), parentId);
+        CategoryDTO categoryDTO = new CategoryDTO(
+                category.getId(),
+                category.getNom(),
+                category.getCreationDate(),
+                category.getParentId(),
+                childCategoryDTOs,
+                category.getParentId() == null
+        );
         categoryDTO.setChildCategories(childCategoryDTOs);
         return categoryDTO;
     }

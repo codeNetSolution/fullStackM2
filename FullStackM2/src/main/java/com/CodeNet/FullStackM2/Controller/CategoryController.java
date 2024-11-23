@@ -3,12 +3,15 @@ package com.CodeNet.FullStackM2.Controller;
 import com.CodeNet.FullStackM2.DTO.CategoryDTO;
 import com.CodeNet.FullStackM2.Entity.Category;
 import com.CodeNet.FullStackM2.Service.CategoryService;
+import com.CodeNet.FullStackM2.utils.PaginatedResponse;
 import com.CodeNet.FullStackM2.utils.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,25 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @GetMapping("/filtered")
+    public ResponseEntity<PaginatedResponse<CategoryDTO>> getAllCategoriesPaginated(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam(value = "name", required = false) String nameFilter,
+            @RequestParam(value = "creationDate", required = false)  String dateFilter) {
+
+        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter, dateFilter);
+
+        PaginatedResponse<CategoryDTO> response = new PaginatedResponse<>(
+                categoryPage.getContent(),
+                categoryPage.getNumber(),
+                categoryPage.getSize(),
+                (int) categoryPage.getTotalElements(),
+                categoryPage.getTotalPages()
+        );
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<Category> create(@RequestBody Category category) {

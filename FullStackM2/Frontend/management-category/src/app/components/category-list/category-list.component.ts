@@ -20,17 +20,34 @@ export class CategoryListComponent implements OnInit {
   page: number = 1;
   size: number = 10;
 
+  nameFilter: string = '';
+  creationDateFilter: string = '';
+  noResultsFound: boolean = false;
+
   constructor(private categoryService: CategoryService, private router: Router) {}
 
   ngOnInit(): void {
-    // S'abonner à l'Observable categories$ pour les mises à jour en temps réel
     this.categoryService.categories$.subscribe((data) => {
       this.categories = data;
     });
-
-    // Charger les catégories initiales
+    
+    this.loadFilteredCategories();
     this.categoryService.getAllCategories(this.page - 1, this.size).subscribe();
   }
+
+  loadFilteredCategories(): void {
+    this.categoryService.getFilteredCategories(0, 10, this.nameFilter, this.creationDateFilter)
+      .subscribe(categories => {
+        console.log('Categories received:', categories);
+        this.categories = categories;
+        this.noResultsFound=categories.length === 0;
+      }, error => {
+        console.error('Failed to load categories due to:', error);
+        this.categories = []; 
+        this.noResultsFound = true;
+      });
+  }
+
 
   deleteCategory(id?: number): void {
     if (id !== undefined) {
