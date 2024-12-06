@@ -39,6 +39,11 @@ export class CategoryFormComponent implements OnInit {
 
   saveCategory(): void {
     console.log("id is", this.category.id);
+
+    if (this.category.isRoot) {
+      this.category.parentId = null;
+    }
+    
     if (this.category.id) {
      
       this.categoryService.updateCategory(this.category.id, this.category).subscribe(

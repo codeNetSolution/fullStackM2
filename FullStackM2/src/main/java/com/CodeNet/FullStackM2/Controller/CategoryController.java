@@ -5,6 +5,7 @@ import com.CodeNet.FullStackM2.Entity.Category;
 import com.CodeNet.FullStackM2.Service.CategoryService;
 import com.CodeNet.FullStackM2.utils.PaginatedResponse;
 import com.CodeNet.FullStackM2.utils.ResponseMessage;
+import io.micrometer.common.lang.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,19 @@ public class CategoryController {
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam(value = "name", required = false) String nameFilter,
-            @RequestParam(value = "creationDate", required = false)  String dateFilter) {
+            @RequestParam(value = "creationDate", required = false)  String dateFilter,
+            @RequestParam(value = "isRoot", required = false)@Nullable String isRootParam) {
 
-        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter, dateFilter);
+
+        Boolean isRoot = null;
+
+        if ("true".equalsIgnoreCase(String.valueOf(isRootParam))) {
+            isRoot = true;
+        } else if ("false".equalsIgnoreCase(String.valueOf(isRootParam))) {
+            isRoot = false;
+        }
+
+        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter, dateFilter, isRoot);
 
         PaginatedResponse<CategoryDTO> response = new PaginatedResponse<>(
                 categoryPage.getContent(),
@@ -43,6 +54,9 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<Category> create(@RequestBody Category category) {
+        if (category.isRoot()) {
+            category.setParentID(null);
+        }
         return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
     }
 

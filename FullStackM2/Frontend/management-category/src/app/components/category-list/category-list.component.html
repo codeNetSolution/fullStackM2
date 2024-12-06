@@ -6,6 +6,13 @@
   <div>
     <input type="text" [(ngModel)]="nameFilter" (input)="loadFilteredCategories()" placeholder="Filtrer par nom">
     <input type="date" [(ngModel)]="creationDateFilter" (change)="loadFilteredCategories()" placeholder="À partir de la date">
+    <label>Catégorie racine : 
+      <select [(ngModel)]="isRootFilter" (change)="loadFilteredCategories()">
+        <option [value]="null">Toutes</option>
+        <option [value]="true">Oui</option>
+        <option [value]="false"> false</option>
+      </select>
+    </label>
   </div>
 
   <div *ngIf="noResultsFound" class="no-results-message">

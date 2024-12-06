@@ -22,7 +22,7 @@ export class CategoryService {
     );
   }
 
-  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string): Observable<Category[]> {
+  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string, isRoot?: boolean): Observable<Category[]> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -31,14 +31,15 @@ export class CategoryService {
       params = params.append('name', name);
     }
     if (creationDate) {
-      console.log('Sending creationDate:', creationDate);
       params = params.append('creationDate', creationDate);
     }
 
-    console.log("params", params);
+    if(isRoot !== undefined && isRoot !== null) {
+      params = params.append('isRoot', isRoot)
+    }
   
     return this.http.get<any>(`${this.apiUrl}/filtered`, { params }).pipe(
-      tap(data => console.log('Filtered categories data:', data)),
+      tap(data => {}),
       map(data => data.content || []), 
       catchError(error => {
         console.error('Error fetching filtered categories:', error);

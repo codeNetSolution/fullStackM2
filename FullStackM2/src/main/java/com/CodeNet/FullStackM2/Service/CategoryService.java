@@ -29,7 +29,7 @@ public class CategoryService {
     @Autowired
     private CategoryHierarchyRepository categoryHierarchyRepository;
 
-    public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter, String dateFilter) {
+    public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter, String dateFilter, Boolean isRoot) {
         Pageable pageable = PageRequest.of(page, size);
         Date startOfDay = null;
         Date startOfNextDay = null;
@@ -46,7 +46,7 @@ public class CategoryService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return categoryRepository.findByFilters(nameFilter, startOfDay, startOfNextDay, pageable)
+        return categoryRepository.findByFilters(nameFilter, startOfDay, startOfNextDay, isRoot, pageable)
                 .map(this::convertToDTO);
     }
 

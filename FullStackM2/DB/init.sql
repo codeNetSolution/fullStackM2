@@ -4,6 +4,7 @@ USE categories_db;
 CREATE TABLE IF NOT EXISTS category (
                                         id INT AUTO_INCREMENT PRIMARY KEY,
                                         parent_id INT,
+                                        is_root BOOLEAN DEFAULT false,
                                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                         nom VARCHAR(255) NOT NULL
     );

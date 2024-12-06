@@ -3,6 +3,10 @@
   <form (ngSubmit)="saveCategory()">
     <label for="nom">Nom de la catégorie:</label>
     <input id="nom" [(ngModel)]="category.nom" name="nom" required />
+
+    <label for="isRoot">Catégorie racine :</label>
+    <input type="checkbox" id="isRoot" [(ngModel)]="category.isRoot" name="isRoot" />
+
     <button type="submit">{{ category.id ? 'Modifier' : 'Créer' }}</button>
   </form>
 </div>
