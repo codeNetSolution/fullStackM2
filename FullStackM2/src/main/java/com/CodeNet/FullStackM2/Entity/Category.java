@@ -1,12 +1,15 @@
 package com.CodeNet.FullStackM2.Entity;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "category")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Category {
 
     @Id
@@ -100,5 +103,13 @@ public class Category {
 
     public Long getParentID() {
         return this.parentID;
+    }
+
+    public Category getParentCategory() {
+        return this.parentCategory;
+    }
+
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 }

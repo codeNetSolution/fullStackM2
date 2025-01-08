@@ -1,58 +1,148 @@
-<div>
-  <h2>Liste des Catégories</h2>
-  <button (click)="navigateToCreate()">Créer une nouvelle catégorie</button>
-  
-  <!-- Filter Section -->
-  <div>
-    <input type="text" [(ngModel)]="nameFilter" (input)="loadFilteredCategories()" placeholder="Filtrer par nom">
-    <input type="date" [(ngModel)]="creationDateFilter" (change)="loadFilteredCategories()" placeholder="À partir de la date">
-    <label>Catégorie racine : 
-      <select [(ngModel)]="isRootFilter" (change)="loadFilteredCategories()">
+<div class="p-6 bg-white rounded-lg shadow-md border border-gray-200 space-y-6">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6">Liste des Catégories</h2>
+
+  <!-- Bouton Créer -->
+  <button
+    (click)="navigateToCreate()"
+    class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-200"
+  >
+    + Nouvelle Catégorie
+  </button>
+
+  <!-- Bouton pour ouvrir le modal -->
+  <button
+    (click)="openModal()"
+    class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-full hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-purple-300 transition duration-200"
+  >
+    Associer Catégories
+  </button>
+
+  <!-- Section des Filtres -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-100 p-6 rounded-lg shadow-sm border border-gray-300">
+    <input
+      type="text"
+      [(ngModel)]="nameFilter"
+      (input)="loadFilteredCategories()"
+      placeholder="Rechercher par nom"
+      class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+    />
+
+    <input
+      type="date"
+      [(ngModel)]="creationDateFilter"
+      (change)="loadFilteredCategories()"
+      class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+    />
+
+    <label class="flex flex-col">
+      <span class="text-gray-800 font-medium mb-2">Catégorie racine :</span>
+      <select
+        [(ngModel)]="isRootFilter"
+        (change)="loadFilteredCategories()"
+        class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      >
         <option [value]="null">Toutes</option>
         <option [value]="true">Oui</option>
-        <option [value]="false"> false</option>
+        <option [value]="false">Non</option>
       </select>
     </label>
   </div>
 
-  <div *ngIf="noResultsFound" class="no-results-message">
+  <!-- Message Aucun Résultat -->
+  <div
+    *ngIf="noResultsFound"
+    class="p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 text-center"
+  >
     <p>Aucune catégorie trouvée pour les critères sélectionnés.</p>
   </div>
 
-  
-  <ul *ngIf="!noResultsFound">
-    <li *ngFor="let category of categories">
-      {{ category.nom }}
-      <a [routerLink]="['/category', category.id]">Détails</a>
-      <a [routerLink]="['/category/edit', category.id]">Modifier</a>
-      <button (click)="deleteCategory(category.id)">Supprimer</button>
+  <!-- Liste des Catégories -->
+  <div *ngIf="!noResultsFound" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div
+      *ngFor="let category of categories"
+      class="group relative p-6 bg-gradient-to-b from-gray-100 to-gray-50 rounded-lg border border-gray-300 shadow-md hover:shadow-lg transition duration-200"
+    >
 
-      <!-- Affichage récursif des catégories enfants -->
-      <ul *ngIf="category.childCategories && category.childCategories.length">
-        <li *ngFor="let child of category.childCategories">
-          {{ child.nom }}
-        </li>
-      </ul>
-    </li>
-  </ul>
+      <!-- Informations de la Catégorie -->
+      <div class="flex flex-col space-y-2">
+        <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition">
+          {{ category.nom }}
+        </h3>
+      
+        <div class="absolute top-4 right-4 px-2 py-1 text-xs bg-blue-500 text-white rounded-full">
+          {{ category.root ? 'Racine' : 'Enfant' }}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between items-center mt-4">
+        <a
+          [routerLink]="['/category', category.id]"
+          class="text-blue-500 hover:underline font-medium"
+        >
+          Détails
+        </a>
+        <div class="flex space-x-4">
+          <a
+            [routerLink]="['/category/edit', category.id]"
+            class="text-green-500 hover:underline font-medium"
+          >
+            Modifier
+          </a>
+          <button
+            (click)="deleteCategory(category.id)"
+            class="text-red-500 hover:underline font-medium"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div>
-  <h3>Associer une catégorie parent avec un enfant</h3>
+<!-- Modal -->
+<div
+  *ngIf="isModalOpen"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition duration-300"
+>
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Associer une Catégorie</h3>
+    <div class="grid grid-cols-1 gap-4">
+      <select
+        [(ngModel)]="selectedParentId"
+        class="w-full px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      >
+        <option [value]="undefined">Sélectionnez un parent</option>
+        <option *ngFor="let category of categories" [value]="category.id">
+          {{ category.nom }}
+        </option>
+      </select>
 
-  <select [(ngModel)]="selectedParentId">
-    <option [value]="undefined">Sélectionnez un parent</option>
-    <option *ngFor="let category of categories" [value]="category.id">
-      {{ category.nom }}
-    </option>
-  </select>
+      <select
+        [(ngModel)]="selectedChildId"
+        class="w-full px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      >
+        <option [value]="undefined">Sélectionnez un enfant</option>
+        <option *ngFor="let category of categories" [value]="category.id">
+          {{ category.nom }}
+        </option>
+      </select>
+    </div>
 
-  <select [(ngModel)]="selectedChildId">
-    <option [value]="undefined">Sélectionnez un enfant</option>
-    <option *ngFor="let category of categories" [value]="category.id">
-      {{ category.nom }}
-    </option>
-  </select>
-
-  <button (click)="associateParentWithChild()">Associer</button>
+    <div class="flex justify-end space-x-4 mt-6">
+      <button
+        (click)="closeModal()"
+        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
+      >
+        Annuler
+      </button>
+      <button
+        (click)="onAssociate()"
+        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:opacity-90"
+      >
+        Associer
+      </button>
+    </div>
+  </div>
 </div>

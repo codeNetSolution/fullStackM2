@@ -3,6 +3,7 @@ package com.CodeNet.FullStackM2.Controller;
 import com.CodeNet.FullStackM2.DTO.CategoryDTO;
 import com.CodeNet.FullStackM2.Entity.Category;
 import com.CodeNet.FullStackM2.Service.CategoryService;
+import com.CodeNet.FullStackM2.utils.ApiResponse;
 import com.CodeNet.FullStackM2.utils.PaginatedResponse;
 import com.CodeNet.FullStackM2.utils.ResponseMessage;
 import io.micrometer.common.lang.Nullable;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,6 @@ public class CategoryController {
             @RequestParam(value = "name", required = false) String nameFilter,
             @RequestParam(value = "creationDate", required = false)  String dateFilter,
             @RequestParam(value = "isRoot", required = false)@Nullable String isRootParam) {
-
 
         Boolean isRoot = null;
 
@@ -53,18 +52,63 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody Category category) {
-        if (category.isRoot()) {
-            category.setParentID(null);
+    public ResponseEntity<ApiResponse<Category>> create(@RequestBody Category category) {
+        try {
+            // Si root = true, la catégorie est une racine et ne doit pas avoir de parent
+            if (category.isRoot()) {
+                if (category.getParentID() != null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ApiResponse<>("Une catégorie racine (root = true) ne peut pas avoir de parent.", null, HttpStatus.BAD_REQUEST.value()));
+                }
+                category.setParentID(null); // Assurez-vous que parentID est null
+                category.setParentCategory(null);
+            } else {
+                // Si root = false, la catégorie peut ou non avoir un parent
+                if (category.getParentID() != null) {
+                    // Vérifier si le parent spécifié existe
+                    boolean parentExists = categoryService.categoryExists(category.getParentID());
+                    if (!parentExists) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new ApiResponse<>("La catégorie parente spécifiée n'existe pas.", null, HttpStatus.NOT_FOUND.value()));
+                    }
+
+                    // Vérifier que le parent est une racine
+                    Category parentCategory = categoryService.getCategoryById(category.getParentID());
+                    if (!parentCategory.isRoot()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(new ApiResponse<>("La catégorie parente spécifiée doit être une racine (root = true).", null, HttpStatus.BAD_REQUEST.value()));
+                    }
+
+                    // Associer la catégorie enfant au parent
+                    category.setParentCategory(parentCategory);
+                }
+            }
+
+            // Création de la catégorie
+            Category savedCategory = categoryService.createCategory(category);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse<>("Catégorie créée avec succès.", savedCategory, HttpStatus.CREATED.value()));
+
+        } catch (Exception ex) {
+            // Gestion des erreurs imprévues
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("Erreur lors de la création de la catégorie : " + ex.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
-        return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
     }
+
+
+
+
+
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) throws Exception {
-        return new ResponseEntity<>(categoryService.updateCategory(id, category.getNom(), null), HttpStatus.OK);
+        Long parentId = category.getParentID();
+        return new ResponseEntity<>(categoryService.updateCategory(id, category.getNom(), parentId), HttpStatus.OK);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
@@ -88,10 +132,14 @@ public class CategoryController {
     @PutMapping("/{parentId}/associate/{childId}")
     public ResponseEntity<ResponseMessage> associateParentWithChild(@PathVariable Long parentId, @PathVariable Long childId) {
         try {
+            if (parentId.equals(childId)) {
+                return ResponseEntity.badRequest().body(new ResponseMessage("Une catégorie ne peut pas être son propre parent."));
+            }
             categoryService.associateParentWithChild(parentId, childId);
             return ResponseEntity.ok(new ResponseMessage("Association réussie entre la catégorie parent et enfant"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ResponseMessage("Erreur lors de l'association: " + e.getMessage()));
         }
     }
+
 }

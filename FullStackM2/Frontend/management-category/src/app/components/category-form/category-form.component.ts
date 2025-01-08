@@ -40,7 +40,7 @@ export class CategoryFormComponent implements OnInit {
   saveCategory(): void {
     console.log("id is", this.category.id);
 
-    if (this.category.isRoot) {
+    if (this.category.root) {
       this.category.parentId = null;
     }
     

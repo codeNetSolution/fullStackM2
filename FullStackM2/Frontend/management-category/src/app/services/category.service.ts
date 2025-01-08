@@ -53,13 +53,17 @@ export class CategoryService {
 
 
   createCategory(category: Category): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category).pipe(
+    return this.http.post<Category>(this.apiUrl, category, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       tap(() => this.refreshCategories())
     );
   }
 
   updateCategory(id: number, category: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, category).pipe(
+    return this.http.put<Category>(`${this.apiUrl}/${id}`, category, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       tap(() => this.refreshCategories())
     );
   }
@@ -75,10 +79,12 @@ export class CategoryService {
   }
 
   associateParentWithChild(parentId: number, childId: number): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${parentId}/associate/${childId}`, {}).pipe(
-      tap(() => this.refreshCategories())
-    );
-  }
+  return this.http.put<string>(`${this.apiUrl}/${parentId}/associate/${childId}`, {}, {
+    headers: { 'Content-Type': 'application/json' }
+  }).pipe(
+    tap(() => this.refreshCategories())
+  );
+}
 
   private refreshCategories(): void {
     this.getAllCategories(0, 10).subscribe((categories) => {

@@ -4,11 +4,11 @@ export class Category {
   nom: string;
   parentId?: number | null;
   childCategories?: Category[];
-  isRoot: boolean;
+  root: boolean;
 
   constructor() {
     this.nom = '';
     this.childCategories = [];
-    this.isRoot = false;
+    this.root = false;
   }
 }

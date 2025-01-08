@@ -53,30 +53,50 @@ public class CategoryService {
 
 
     public Category createCategory(Category category) {
+        if (category.isRoot()) {
+            // Une racine ne peut pas avoir de parent
+            if (category.getParentID() != null) {
+                throw new RuntimeException("Une catégorie racine (root = true) ne peut pas avoir de parent.");
+            }
+            category.setParentID(null);
+            category.setParentCategory(null);
+        } else {
+            // Une catégorie non racine peut avoir un parent ou être indépendante
+            if (category.getParentID() != null) {
+                Category parentCategory = categoryRepository.findById(category.getParentID())
+                        .orElseThrow(() -> new RuntimeException("Parent category not found"));
+                if (!parentCategory.isRoot()) {
+                    throw new RuntimeException("La catégorie parente spécifiée doit être une racine (root = true).");
+                }
+                category.setParentCategory(parentCategory);
+            }
+        }
+
         return categoryRepository.save(category);
     }
+
+
+
+
 
     public CategoryDTO convertToDTO(Category category) {
         List<CategoryDTO> childCategoryDTOs = category.getChildCategories().stream()
                 .map(ch -> convertToDTO(ch.getChildCategory()))
                 .collect(Collectors.toList());
-
-        Long parentId = category.getParentCategories().stream()
-                .findFirst()
-                .map(ch -> ch.getParentCategory().getId())
-                .orElse(null);
-
+        Long parentId = category.getParentId();
         CategoryDTO categoryDTO = new CategoryDTO(
                 category.getId(),
                 category.getNom(),
                 category.getCreationDate(),
-                category.getParentId(),
+                parentId,
                 childCategoryDTOs,
-                category.getParentId() == null
+                category.isRoot()
         );
         categoryDTO.setChildCategories(childCategoryDTOs);
+
         return categoryDTO;
     }
+
 
     public Category updateCategory(Long id, String nom, Long parentId) throws Exception {
         Optional<Category> categoryOptional = categoryRepository.findById(id);
@@ -108,21 +128,39 @@ public class CategoryService {
     }
 
     public void associateParentWithChild(Long parentId, Long childId) throws Exception {
+        // Vérifier si le parent existe
         Category parentCategory = categoryRepository.findById(parentId)
                 .orElseThrow(() -> new RuntimeException("Parent category not found"));
+
+        // Vérifier si l'enfant existe
         Category childCategory = categoryRepository.findById(childId)
                 .orElseThrow(() -> new RuntimeException("Child category not found"));
 
-        boolean associationExists = categoryHierarchyRepository.findAll().stream()
-                .anyMatch(ch -> ch.getParentCategory().equals(parentCategory) && ch.getChildCategory().equals(childCategory));
-
-        if (associationExists) {
-            throw new Exception("Cette catégorie enfant a déjà un parent.");
+        // Vérifier que l'enfant n'est pas une catégorie racine
+        if (childCategory.isRoot()) {
+            throw new Exception("Une catégorie racine ne peut pas être assignée comme enfant.");
         }
 
-        CategoryHierarchy hierarchy = new CategoryHierarchy();
-        hierarchy.setParentCategory(parentCategory);
-        hierarchy.setChildCategory(childCategory);
-        categoryHierarchyRepository.save(hierarchy);
+        // Vérifier que le parent n'est pas lui-même l'enfant
+        if (parentId.equals(childId)) {
+            throw new Exception("Une catégorie ne peut pas être son propre parent.");
+        }
+
+        childCategory.setParentCategory(parentCategory);
+        childCategory.setParentID(parentId);
+
+        // Sauvegarder les changements
+        categoryRepository.save(childCategory);
     }
+
+    public boolean categoryExists(Long parentId) {
+        return categoryRepository.existsById(parentId);
+    }
+
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("La catégorie spécifiée n'existe pas."));
+    }
+
+
 }
