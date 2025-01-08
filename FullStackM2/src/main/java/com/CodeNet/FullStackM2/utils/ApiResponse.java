@@ -5,14 +5,12 @@ public class ApiResponse<T> {
     private T data;
     private int status;
 
-    // Constructeur
     public ApiResponse(String message, T data, int status) {
         this.message = message;
         this.data = data;
         this.status = status;
     }
 
-    // Getters et Setters
     public String getMessage() {
         return message;
     }

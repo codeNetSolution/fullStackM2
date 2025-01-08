@@ -54,56 +54,38 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<ApiResponse<Category>> create(@RequestBody Category category) {
         try {
-            // Si root = true, la catégorie est une racine et ne doit pas avoir de parent
             if (category.isRoot()) {
                 if (category.getParentID() != null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(new ApiResponse<>("Une catégorie racine (root = true) ne peut pas avoir de parent.", null, HttpStatus.BAD_REQUEST.value()));
                 }
-                category.setParentID(null); // Assurez-vous que parentID est null
+                category.setParentID(null);
                 category.setParentCategory(null);
             } else {
-                // Si root = false, la catégorie peut ou non avoir un parent
                 if (category.getParentID() != null) {
-                    // Vérifier si le parent spécifié existe
                     boolean parentExists = categoryService.categoryExists(category.getParentID());
                     if (!parentExists) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(new ApiResponse<>("La catégorie parente spécifiée n'existe pas.", null, HttpStatus.NOT_FOUND.value()));
                     }
-
-                    // Vérifier que le parent est une racine
                     Category parentCategory = categoryService.getCategoryById(category.getParentID());
                     if (!parentCategory.isRoot()) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                 .body(new ApiResponse<>("La catégorie parente spécifiée doit être une racine (root = true).", null, HttpStatus.BAD_REQUEST.value()));
                     }
-
-                    // Associer la catégorie enfant au parent
                     category.setParentCategory(parentCategory);
                 }
             }
-
-            // Création de la catégorie
             Category savedCategory = categoryService.createCategory(category);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>("Catégorie créée avec succès.", savedCategory, HttpStatus.CREATED.value()));
 
         } catch (Exception ex) {
-            // Gestion des erreurs imprévues
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("Erreur lors de la création de la catégorie : " + ex.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
-
-
-
-
-
-
-
-
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) throws Exception {
         Long parentId = category.getParentID();

@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryHierarchyRepository extends JpaRepository<CategoryHierarchy, Long> {
-    // Custom queries if needed
 }
 

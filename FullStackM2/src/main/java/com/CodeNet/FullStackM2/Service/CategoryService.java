@@ -128,28 +128,19 @@ public class CategoryService {
     }
 
     public void associateParentWithChild(Long parentId, Long childId) throws Exception {
-        // Vérifier si le parent existe
         Category parentCategory = categoryRepository.findById(parentId)
                 .orElseThrow(() -> new RuntimeException("Parent category not found"));
-
-        // Vérifier si l'enfant existe
         Category childCategory = categoryRepository.findById(childId)
                 .orElseThrow(() -> new RuntimeException("Child category not found"));
-
-        // Vérifier que l'enfant n'est pas une catégorie racine
         if (childCategory.isRoot()) {
             throw new Exception("Une catégorie racine ne peut pas être assignée comme enfant.");
         }
-
-        // Vérifier que le parent n'est pas lui-même l'enfant
         if (parentId.equals(childId)) {
             throw new Exception("Une catégorie ne peut pas être son propre parent.");
         }
 
         childCategory.setParentCategory(parentCategory);
         childCategory.setParentID(parentId);
-
-        // Sauvegarder les changements
         categoryRepository.save(childCategory);
     }
 
