@@ -1,11 +1,11 @@
 package com.CodeNet.FullStackM2.utils;
 
-public class ApiResponse<T> {
+public class ApiMessage<T> {
     private String message;
     private T data;
     private int status;
 
-    public ApiResponse(String message, T data, int status) {
+    public ApiMessage(String message, T data, int status) {
         this.message = message;
         this.data = data;
         this.status = status;
