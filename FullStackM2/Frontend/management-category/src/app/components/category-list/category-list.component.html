@@ -9,7 +9,7 @@
     + Nouvelle Catégorie
   </button>
 
-  <!-- Bouton pour ouvrir le modal -->
+  <!-- Bouton pour ouvrir le modal d'association -->
   <button
     (click)="openModal()"
     class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-full hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-purple-300 transition duration-200"
@@ -62,13 +62,11 @@
       *ngFor="let category of categories"
       class="group relative p-6 bg-gradient-to-b from-gray-100 to-gray-50 rounded-lg border border-gray-300 shadow-md hover:shadow-lg transition duration-200"
     >
-
       <!-- Informations de la Catégorie -->
       <div class="flex flex-col space-y-2">
         <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition">
           {{ category.nom }}
         </h3>
-      
         <div class="absolute top-4 right-4 px-2 py-1 text-xs bg-blue-500 text-white rounded-full">
           {{ category.root ? 'Racine' : 'Enfant' }}
         </div>
@@ -76,19 +74,19 @@
 
       <!-- Actions -->
       <div class="flex justify-between items-center mt-4">
-        <a
-          [routerLink]="['/category', category.id]"
+        <button
+          (click)="openDetailsModal(category.id!)"
           class="text-blue-500 hover:underline font-medium"
         >
           Détails
-        </a>
+        </button>
         <div class="flex space-x-4">
-          <a
-            [routerLink]="['/category/edit', category.id]"
+          <button
+            (click)="openEditModal(category.id!)"
             class="text-green-500 hover:underline font-medium"
           >
             Modifier
-          </a>
+          </button>
           <button
             (click)="deleteCategory(category.id)"
             class="text-red-500 hover:underline font-medium"
@@ -100,8 +98,6 @@
     </div>
   </div>
 </div>
-
-<!-- Modal -->
 <div
   *ngIf="isModalOpen"
   class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition duration-300"
@@ -144,5 +140,42 @@
         Associer
       </button>
     </div>
+  </div>
+</div>
+
+<div
+  *ngIf="isDetailsModalOpen"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition duration-300"
+>
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+    <button
+      (click)="closeDetailsModal()"
+      class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+    >
+      ✕
+    </button>
+    <app-category-details
+      *ngIf="selectedCategoryId"
+      [categoryId]="selectedCategoryId"
+    ></app-category-details>
+  </div>
+</div>
+
+
+<div
+  *ngIf="isEditModalOpen"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition duration-300"
+>
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+    <button
+      (click)="closeEditModal()"
+      class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+    >
+      ✕
+    </button>
+    <app-category-form
+      *ngIf="selectedCategoryId"
+      [categoryId]="selectedCategoryId"
+    ></app-category-form>
   </div>
 </div>

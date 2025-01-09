@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,Input} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { CommonModule } from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-category-details',
@@ -12,17 +13,24 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./category-details.component.css']
 })
 export class CategoryDetailsComponent implements OnInit {
+  @Input() categoryId?: number;
   category?: Category;
   parentCategory?: Category;
   isRootCategory: boolean = false;
 
   constructor(
     private categoryService: CategoryService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('id')!;
+    if (this.categoryId) {
+      this.loadCategoryDetails(this.categoryId);
+    }
+  }
+
+  private loadCategoryDetails(id: number): void {
     this.categoryService.getCategoryDetails(id).subscribe(
       (category) => {
         this.category = category;
@@ -40,5 +48,8 @@ export class CategoryDetailsComponent implements OnInit {
       (parentCategory) => this.parentCategory = parentCategory,
       (error) => console.error('Error fetching parent category', error)
     );
+  }
+  goBack(): void {
+    this.location.back(); 
   }
 }

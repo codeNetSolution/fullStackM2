@@ -5,13 +5,15 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; 
+import { CategoryDetailsComponent } from '../category-details/category-details.component';
+import { CategoryFormComponent } from '../category-form/category-form.component';
 
 @Component({
   selector: 'app-category-list',
   standalone: true,
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.css'],
-  imports: [CommonModule, FormsModule, RouterModule] 
+  imports: [CommonModule, FormsModule, RouterModule,CategoryDetailsComponent,CategoryFormComponent] 
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
@@ -24,6 +26,15 @@ export class CategoryListComponent implements OnInit {
   isRootFilter?: boolean;
   noResultsFound: boolean = false;
   isModalOpen: boolean = false;
+  selectedCategory?: Category;
+  selectedCategoryId?: number;
+  isEditMode: boolean = false;
+
+  isDetailsModalOpen: boolean = false; 
+  isEditModalOpen: boolean = false;    
+  
+
+
 
   constructor(private categoryService: CategoryService, private router: Router) {}
 
@@ -42,7 +53,6 @@ export class CategoryListComponent implements OnInit {
       .subscribe(
         (categories) => {
           this.categories = categories;
-          console.log("categoris", categories)
           this.noResultsFound = categories.length === 0;
         },
         (error) => {
@@ -85,5 +95,25 @@ export class CategoryListComponent implements OnInit {
           this.closeModal();
         });
     }
+  }
+
+  openDetailsModal(categoryId: number): void {
+    this.selectedCategoryId = categoryId;
+    this.isDetailsModalOpen = true;
+  }
+
+  openEditModal(categoryId: number): void {
+    this.selectedCategoryId = categoryId;
+    this.isEditModalOpen = true;
+  }
+
+  closeDetailsModal(): void {
+    this.isDetailsModalOpen = false;
+    this.selectedCategoryId = undefined;
+  }
+  
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.selectedCategoryId = undefined;
   }
 }

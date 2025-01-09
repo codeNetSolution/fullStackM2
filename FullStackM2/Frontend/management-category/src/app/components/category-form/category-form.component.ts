@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Input} from '@angular/core';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { Router , ActivatedRoute} from '@angular/router';
   imports: [FormsModule, CommonModule]
 })
 export class CategoryFormComponent implements OnInit {
+  @Input() categoryId?: number;
   category: Category = new Category();
 
   constructor(
@@ -22,18 +23,16 @@ export class CategoryFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const id = params['id'];
-      if(id) {
-        console.log("id from URL is", id);
-       this.categoryService.getCategoryDetails(id).subscribe(
-        category => {
+    if (this.categoryId) {
+      // Charger les détails de la catégorie si un ID est fourni
+      this.categoryService.getCategoryDetails(this.categoryId).subscribe(
+        (category) => {
           this.category = category;
-          console.log("id is", this.category.id);
-        }
-       )
-      }
-    });
+          console.log("Catégorie chargée :", this.category);
+        },
+        (error) => console.error('Erreur lors du chargement de la catégorie', error)
+      );
+    }
   }
 
 
