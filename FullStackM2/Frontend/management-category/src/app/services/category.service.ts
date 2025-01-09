@@ -22,7 +22,7 @@ export class CategoryService {
     );
   }
 
-  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string): Observable<Category[]> {
+  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string, isRoot?: boolean): Observable<Category[]> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -31,14 +31,15 @@ export class CategoryService {
       params = params.append('name', name);
     }
     if (creationDate) {
-      console.log('Sending creationDate:', creationDate);
       params = params.append('creationDate', creationDate);
     }
 
-    console.log("params", params);
+    if(isRoot !== undefined && isRoot !== null) {
+      params = params.append('isRoot', isRoot)
+    }
   
     return this.http.get<any>(`${this.apiUrl}/filtered`, { params }).pipe(
-      tap(data => console.log('Filtered categories data:', data)),
+      tap(data => {}),
       map(data => data.content || []), 
       catchError(error => {
         console.error('Error fetching filtered categories:', error);
@@ -52,13 +53,17 @@ export class CategoryService {
 
 
   createCategory(category: Category): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category).pipe(
+    return this.http.post<Category>(this.apiUrl, category, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       tap(() => this.refreshCategories())
     );
   }
 
   updateCategory(id: number, category: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, category).pipe(
+    return this.http.put<Category>(`${this.apiUrl}/${id}`, category, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       tap(() => this.refreshCategories())
     );
   }
@@ -74,10 +79,12 @@ export class CategoryService {
   }
 
   associateParentWithChild(parentId: number, childId: number): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${parentId}/associate/${childId}`, {}).pipe(
-      tap(() => this.refreshCategories())
-    );
-  }
+  return this.http.put<string>(`${this.apiUrl}/${parentId}/associate/${childId}`, {}, {
+    headers: { 'Content-Type': 'application/json' }
+  }).pipe(
+    tap(() => this.refreshCategories())
+  );
+}
 
   private refreshCategories(): void {
     this.getAllCategories(0, 10).subscribe((categories) => {

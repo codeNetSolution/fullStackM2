@@ -25,7 +25,7 @@ public class CategoryDTO {
         this.parentId = parentId;
         this.creationDate = creationDate;
         this.childCategories = childCategories;
-        this.isRoot = parentId == null;
+        this.isRoot = isRoot;
     }
 
 
@@ -68,6 +68,12 @@ public class CategoryDTO {
     }
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+    public void setIsRoot(boolean isRoot) {
+        this.isRoot = isRoot;
+    }
+    public boolean isRoot() {
+        return isRoot;
     }
 
 }

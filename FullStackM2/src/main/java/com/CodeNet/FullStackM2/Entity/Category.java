@@ -1,12 +1,15 @@
 package com.CodeNet.FullStackM2.Entity;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "category")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Category {
 
     @Id
@@ -15,7 +18,13 @@ public class Category {
 
     private String nom;
 
-    @Column(name = "created_at")
+    @Column(name = "parent_id", insertable = false, updatable = false)
+    private Long parentID;
+
+    @Column(name= "is_root", nullable = false)
+    private boolean isRoot;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 
@@ -29,6 +38,12 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parentCategory;
 
+    @PrePersist
+    protected  void onCreate() {
+        if (creationDate == null) {
+            creationDate = new Date();
+        }
+    }
 
     public Long getId() {
         return id;
@@ -72,5 +87,29 @@ public class Category {
 
     public Long getParentId() {
         return this.parentCategory != null ? this.parentCategory.getId() : null;
+    }
+
+    public boolean isRoot() {
+        return isRoot;
+    }
+
+    public void setIsRoot(boolean isRoot) {
+        this.isRoot = isRoot;
+    }
+
+    public void setParentID(Long parentID) {
+        this.parentID = parentID;
+    }
+
+    public Long getParentID() {
+        return this.parentID;
+    }
+
+    public Category getParentCategory() {
+        return this.parentCategory;
+    }
+
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 }

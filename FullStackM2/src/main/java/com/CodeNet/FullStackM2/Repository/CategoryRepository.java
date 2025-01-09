@@ -15,9 +15,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c FROM Category c WHERE " +
             "(:name IS NULL OR c.nom LIKE %:name%) AND " +
-            "(:startOfDay IS NULL OR (c.creationDate >= :startOfDay AND c.creationDate < :startOfNextDay))")
+            "(:startOfDay IS NULL OR (c.creationDate >= :startOfDay AND c.creationDate < :startOfNextDay))" +
+             "AND (:isRoot IS NULL OR c.isRoot = :isRoot)")
     Page<Category> findByFilters(@Param("name") String name,
                                  @Param("startOfDay") Date startOfDay,
                                  @Param("startOfNextDay") Date startOfNextDay,
+                                 @Param("isRoot") Boolean isRoot,
                                  Pageable pageable);
 }
