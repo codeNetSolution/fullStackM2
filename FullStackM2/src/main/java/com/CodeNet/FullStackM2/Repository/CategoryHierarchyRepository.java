@@ -17,5 +17,7 @@ public interface CategoryHierarchyRepository extends JpaRepository<CategoryHiera
 
     @Query("SELECT ch.parentCategory FROM CategoryHierarchy ch WHERE ch.childCategory.id = :chiledId")
     List<Category> findParentByChildrenId(@Param("chiledId") Long chiledId);
+
+    boolean existsByChildCategory(Category childCategory);
 }
 

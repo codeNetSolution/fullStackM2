@@ -37,7 +37,9 @@ public class CategoryController {
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam(value = "name", required = false) String nameFilter,
-            @RequestParam(value = "creationDate", required = false) String dateFilter,
+            @RequestParam(value = "afterDate", required = false) String afterDateFilter,
+            @RequestParam(value = "beforeDate", required = false) String beforeDateFilter,
+            @RequestParam(value = "creationDate", required = false) String creationDateFilter,
             @RequestParam(value = "isRoot", required = false) String isRootParam
     ) {
         Boolean isRoot = null;
@@ -47,7 +49,8 @@ public class CategoryController {
             isRoot = false;
         }
 
-        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter, dateFilter, isRoot);
+        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter,
+                afterDateFilter, beforeDateFilter, creationDateFilter, isRoot);
 
         PaginatedResponse<CategoryDTO> response = new PaginatedResponse<>(
                 categoryPage.getContent(),

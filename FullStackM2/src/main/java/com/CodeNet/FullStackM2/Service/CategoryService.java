@@ -29,28 +29,32 @@ public class CategoryService {
     @Autowired
     private CategoryHierarchyRepository categoryHierarchyRepository;
 
-    public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter, String dateFilter, Boolean isRoot) {
+    public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter,
+                                                       String afterDateFilter, String beforeDateFilter, String creationDateFilter, Boolean isRoot) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Date startOfDay = null;
-        Date startOfNextDay = null;
-        if (dateFilter != null && !dateFilter.isEmpty()) {
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                startOfDay = dateFormat.parse(dateFilter);
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(startOfDay);
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                startOfNextDay = calendar.getTime();
-            } catch (ParseException e) {
-                throw new RuntimeException("Invalid date format, expected YYYY-MM-DD.");
+        Date afterDate = null;
+        Date beforeDate = null;
+        Date creationDate = null;
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            if (afterDateFilter != null && !afterDateFilter.isEmpty()) {
+                afterDate = dateFormat.parse(afterDateFilter);
             }
+            if (beforeDateFilter != null && !beforeDateFilter.isEmpty()) {
+                beforeDate = dateFormat.parse(beforeDateFilter);
+            }
+            if(creationDateFilter != null && !creationDateFilter.isEmpty()) {
+                creationDate = dateFormat.parse(creationDateFilter);
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException("Invalid date format, expected YYYY-MM-DD.");
         }
 
-        return categoryRepository.findByFilters(nameFilter, startOfDay, startOfNextDay, isRoot, pageable)
+        return categoryRepository.findByFilters(nameFilter, isRoot, afterDate, beforeDate, creationDate, pageable)
                 .map(this::convertToDTO);
     }
+
 
 
 
@@ -153,11 +157,19 @@ public class CategoryService {
     }
 
     public void associateParentWithChild(Long parentId, Long childId) {
+        if (parentId.equals(childId)) {
+            throw new RuntimeException("Une catégorie ne peut pas être son propre parent.");
+        }
         Category parent = categoryRepository.findById(parentId)
                 .orElseThrow(() -> new RuntimeException("Parent category not found"));
 
         Category child = categoryRepository.findById(childId)
                 .orElseThrow(() -> new RuntimeException("Child category not found"));
+
+        boolean hasExistingParent = categoryHierarchyRepository.existsByChildCategory(child);
+        if (hasExistingParent) {
+            throw new RuntimeException("Cette catégorie enfant est déjà associée à un parent.");
+        }
 
         if (child.isRoot()) {
             throw new RuntimeException("A root category cannot be a child.");

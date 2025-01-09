@@ -26,12 +26,34 @@
       placeholder="Rechercher par nom"
       class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
     />
+  </div>
 
+  <div>
+    <label class="block text-gray-700 font-medium mb-2">Date de création :</label>
     <input
       type="date"
       [(ngModel)]="creationDateFilter"
       (change)="loadFilteredCategories()"
-      class="w-full px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      placeholder="Après la date"
+      class="w-full px-4 py-2 border border-gray-300 rounded-full"
+    />
+
+    <label class="block text-gray-700 font-medium mb-2">Après la date :</label>
+    <input
+      type="date"
+      [(ngModel)]="afterDateFilter"
+      (change)="loadFilteredCategories()"
+      placeholder="Après la date"
+      class="w-full px-4 py-2 border border-gray-300 rounded-full"
+    />
+
+    <label class="block text-gray-700 font-medium mb-2">Avant la date :</label>
+    <input
+      type="date"
+      [(ngModel)]="beforeDateFilter"
+      (change)="loadFilteredCategories()"
+      placeholder="Avant la date"
+      class="w-full px-4 py-2 border border-gray-300 rounded-full"
     />
 
     <label class="flex flex-col">
@@ -106,6 +128,7 @@
     <div class="grid grid-cols-1 gap-4">
       <select
         [(ngModel)]="selectedParentId"
+        (change)="onParentChange()"
         class="w-full px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
       >
         <option [value]="undefined">Sélectionnez un parent</option>
@@ -119,7 +142,10 @@
         class="w-full px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
       >
         <option [value]="undefined">Sélectionnez un enfant</option>
-        <option *ngFor="let category of categories" [value]="category.id">
+        <option 
+        *ngFor="let category of filteredChildren" 
+        [value]="category.id"
+        >
           {{ category.nom }}
         </option>
       </select>

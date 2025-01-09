@@ -30,10 +30,11 @@ export class CategoryListComponent implements OnInit {
   selectedCategory?: Category;
   selectedCategoryId?: number;
   isEditMode: boolean = false;
-
   isDetailsModalOpen: boolean = false; 
-  isEditModalOpen: boolean = false;    
-  
+  isEditModalOpen: boolean = false;
+  afterDateFilter: string = '';
+  beforeDateFilter: string = '';
+  filteredChildren: Category[] = [];
 
 
 
@@ -50,10 +51,11 @@ export class CategoryListComponent implements OnInit {
 
   loadFilteredCategories(): void {
     this.categoryService
-      .getFilteredCategories(0, 10, this.nameFilter, this.creationDateFilter, this.isRootFilter)
+      .getFilteredCategories(0, 10, this.nameFilter, this.afterDateFilter, this.beforeDateFilter, this.creationDateFilter,this.isRootFilter)
       .subscribe(
         (categories) => {
           this.categories = categories;
+          this.updateFilteredChildren();
           this.noResultsFound = categories.length === 0;
         },
         (error) => {
@@ -64,6 +66,21 @@ export class CategoryListComponent implements OnInit {
       );
   }
 
+  updateFilteredChildren(): void {
+    if (this.selectedParentId) {
+        this.filteredChildren = this.categories.filter((category) => {
+            const exclude = Number(category.id) === Number(this.selectedParentId);
+            return !exclude;
+        });
+    } else {
+        this.filteredChildren = [...this.categories];
+    }
+}
+
+  onParentChange(): void {
+    this.updateFilteredChildren();
+  }
+  
   deleteCategory(id?: number): void {
     if (id !== undefined) {
       this.categoryService.deleteCategory(id).subscribe();
