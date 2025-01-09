@@ -81,6 +81,14 @@ export class CategoryListComponent implements OnInit {
     this.updateFilteredChildren();
   }
   
+  resetFilters(): void {
+    this.nameFilter = '';
+    this.creationDateFilter = '';
+    this.afterDateFilter = '';
+    this.beforeDateFilter = '';
+    this.isRootFilter = undefined;
+    this.loadFilteredCategories();
+  }
   deleteCategory(id?: number): void {
     if (id !== undefined) {
       this.categoryService.deleteCategory(id).subscribe();
