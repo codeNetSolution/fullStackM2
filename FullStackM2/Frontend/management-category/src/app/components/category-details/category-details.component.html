@@ -5,6 +5,13 @@
     <strong class="font-semibold text-gray-900">Nom:</strong> {{ category.nom }}
   </p>
   
+  <!-- Afficher un message si la catégorie est une racine -->
+  <div *ngIf="isRootCategory" class="mt-4">
+    <p class="text-lg text-red-500 font-semibold">
+      Cette catégorie est une catégorie racine et ne peut pas être enfant d'une autre catégorie.
+    </p>
+  </div>
+
   <!-- Afficher la catégorie parent si elle existe -->
   <div *ngIf="parentCategory" class="mt-4">
     <p class="text-lg text-gray-700">

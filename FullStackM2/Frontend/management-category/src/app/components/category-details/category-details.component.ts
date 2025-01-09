@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class CategoryDetailsComponent implements OnInit {
   category?: Category;
   parentCategory?: Category;
+  isRootCategory: boolean = false;
 
   constructor(
     private categoryService: CategoryService,
@@ -25,6 +26,7 @@ export class CategoryDetailsComponent implements OnInit {
     this.categoryService.getCategoryDetails(id).subscribe(
       (category) => {
         this.category = category;
+        this.isRootCategory = category.root;
         if (category.parentId) {
           this.fetchParentCategory(category.parentId);
         }
