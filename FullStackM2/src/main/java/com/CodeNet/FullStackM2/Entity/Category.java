@@ -89,10 +89,12 @@ public class Category {
         return this.parentCategory != null ? this.parentCategory.getId() : null;
     }
 
+    @JsonProperty("root")
     public boolean isRoot() {
         return isRoot;
     }
 
+    @JsonProperty("root")
     public void setIsRoot(boolean isRoot) {
         this.isRoot = isRoot;
     }

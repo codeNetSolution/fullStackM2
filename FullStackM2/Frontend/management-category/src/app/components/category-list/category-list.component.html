@@ -3,9 +3,9 @@
 
   <!-- Bouton Créer -->
   <button
-    (click)="navigateToCreate()"
+    (click)="openCreateModal()"
     class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-200"
-  >
+    >
     + Nouvelle Catégorie
   </button>
 
@@ -47,7 +47,6 @@
       </select>
     </label>
   </div>
-
   <!-- Message Aucun Résultat -->
   <div
     *ngIf="noResultsFound"
@@ -179,3 +178,20 @@
     ></app-category-form>
   </div>
 </div>
+
+<!-- Modal pour Créer une Catégorie -->
+<div
+  *ngIf="isEditModalOpen && !selectedCategoryId"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition duration-300"
+>
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+    <button
+      (click)="closeEditModal()"
+      class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+    >
+      ✕
+    </button>
+    <app-category-form></app-category-form> <!-- Pas de categoryId passé -->
+  </div>
+</div>
+

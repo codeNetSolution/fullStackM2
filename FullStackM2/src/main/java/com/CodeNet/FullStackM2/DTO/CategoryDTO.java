@@ -15,17 +15,18 @@ public class CategoryDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CategoryDTO> childCategories;
 
-
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<CategoryDTO> parentCategory;
 
     // Constructeur
-    public CategoryDTO(Long id, String nom, Date creationDate, Long parentId, List<CategoryDTO> childCategories, boolean isRoot) {
+    public CategoryDTO(Long id, String nom, Date creationDate, Long parentId, List<CategoryDTO> childCategories, boolean isRoot, List<CategoryDTO> parentCategory) {
         this.id = id;
         this.nom = nom;
         this.parentId = parentId;
         this.creationDate = creationDate;
         this.childCategories = childCategories;
         this.isRoot = isRoot;
+        this.parentCategory = parentCategory;
     }
 
 
@@ -74,6 +75,14 @@ public class CategoryDTO {
     }
     public boolean isRoot() {
         return isRoot;
+    }
+
+    public List<CategoryDTO> getParentCategory() {
+        return parentCategory;
+    }
+
+    public void setParentCategory(List<CategoryDTO> parentCategory) {
+        this.parentCategory = parentCategory;
     }
 
 }

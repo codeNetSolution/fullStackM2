@@ -39,13 +39,23 @@ export class CategoryService {
     }
   
     return this.http.get<any>(`${this.apiUrl}/filtered`, { params }).pipe(
-      tap(data => {}),
-      map(data => data.content || []), 
+      tap(data => {
+        console.log('Données brutes reçues :', data);
+      }),
+      map(data => {
+        return (data.content || []).map((category: any) => {
+          return {
+            ...category,
+            creationDate: new Date(category.creationDate), 
+          };
+        });
+      }),
       catchError(error => {
         console.error('Error fetching filtered categories:', error);
         return of([]); 
       })
     );
+    
   }
   
   

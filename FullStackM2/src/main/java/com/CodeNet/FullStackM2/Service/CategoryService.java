@@ -31,21 +31,23 @@ public class CategoryService {
 
     public Page<CategoryDTO> getAllCategoriesPaginated(int page, int size, String nameFilter, String dateFilter, Boolean isRoot) {
         Pageable pageable = PageRequest.of(page, size);
+
         Date startOfDay = null;
         Date startOfNextDay = null;
-
-        try {
-            if (dateFilter != null && !dateFilter.isEmpty()) {
+        if (dateFilter != null && !dateFilter.isEmpty()) {
+            try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 startOfDay = dateFormat.parse(dateFilter);
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(startOfDay);
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                 startOfNextDay = calendar.getTime();
+            } catch (ParseException e) {
+                throw new RuntimeException("Invalid date format, expected YYYY-MM-DD.");
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
+
         return categoryRepository.findByFilters(nameFilter, startOfDay, startOfNextDay, isRoot, pageable)
                 .map(this::convertToDTO);
     }
@@ -80,22 +82,19 @@ public class CategoryService {
 
 
     public CategoryDTO convertToDTO(Category category) {
-        List<CategoryDTO> childCategoryDTOs = category.getChildCategories().stream()
-                .map(ch -> convertToDTO(ch.getChildCategory()))
-                .collect(Collectors.toList());
-        Long parentId = category.getParentId();
-        CategoryDTO categoryDTO = new CategoryDTO(
+        return new CategoryDTO(
                 category.getId(),
                 category.getNom(),
                 category.getCreationDate(),
-                parentId,
-                childCategoryDTOs,
-                category.isRoot()
+                category.getParentId(),
+                null,
+                category.isRoot(),
+                null
         );
-        categoryDTO.setChildCategories(childCategoryDTOs);
-
-        return categoryDTO;
     }
+
+
+
 
 
     public Category updateCategory(Long id, String nom, Long parentId) throws Exception {
@@ -122,26 +121,53 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryDetails(Long id) {
-        return categoryRepository.findById(id)
+    public CategoryDTO getCategoryDetails(Long id) {
+        // Récupérer la catégorie
+        Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Récupérer les enfants
+        List<Category> children = categoryHierarchyRepository.findChildrenByParentId(id);
+
+        List<Category> parent = categoryHierarchyRepository.findParentByChildrenId(id);
+
+        // Convertir les enfants en DTO
+        List<CategoryDTO> childCategoryDTOs = children.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        List<CategoryDTO> parentCategoryDTOs = parent.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        // Créer le DTO avec les enfants inclus
+        return new CategoryDTO(
+                category.getId(),
+                category.getNom(),
+                category.getCreationDate(),
+                category.getParentId(),
+                childCategoryDTOs,
+                category.isRoot(),
+                parentCategoryDTOs
+        );
     }
 
-    public void associateParentWithChild(Long parentId, Long childId) throws Exception {
-        Category parentCategory = categoryRepository.findById(parentId)
+    public void associateParentWithChild(Long parentId, Long childId) {
+        Category parent = categoryRepository.findById(parentId)
                 .orElseThrow(() -> new RuntimeException("Parent category not found"));
-        Category childCategory = categoryRepository.findById(childId)
+
+        Category child = categoryRepository.findById(childId)
                 .orElseThrow(() -> new RuntimeException("Child category not found"));
-        if (childCategory.isRoot()) {
-            throw new Exception("Une catégorie racine ne peut pas être assignée comme enfant.");
-        }
-        if (parentId.equals(childId)) {
-            throw new Exception("Une catégorie ne peut pas être son propre parent.");
+
+        if (child.isRoot()) {
+            throw new RuntimeException("A root category cannot be a child.");
         }
 
-        childCategory.setParentCategory(parentCategory);
-        childCategory.setParentID(parentId);
-        categoryRepository.save(childCategory);
+        CategoryHierarchy hierarchy = new CategoryHierarchy();
+        hierarchy.setParentCategory(parent);
+        hierarchy.setChildCategory(child);
+
+        categoryHierarchyRepository.save(hierarchy);
     }
 
     public boolean categoryExists(Long parentId) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , LOCALE_ID } from '@angular/core';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { Router } from '@angular/router';
@@ -8,12 +8,13 @@ import { RouterModule } from '@angular/router';
 import { CategoryDetailsComponent } from '../category-details/category-details.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 
+
 @Component({
   selector: 'app-category-list',
   standalone: true,
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.css'],
-  imports: [CommonModule, FormsModule, RouterModule,CategoryDetailsComponent,CategoryFormComponent] 
+  imports: [CommonModule, FormsModule, RouterModule,CategoryDetailsComponent,CategoryFormComponent]
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
@@ -116,4 +117,12 @@ export class CategoryListComponent implements OnInit {
     this.isEditModalOpen = false;
     this.selectedCategoryId = undefined;
   }
+
+  openCreateModal(): void {
+    this.selectedCategoryId = undefined;
+    this.isEditModalOpen = true; 
+  }
+  
+
+  
 }

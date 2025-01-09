@@ -35,8 +35,12 @@ export class CategoryDetailsComponent implements OnInit {
       (category) => {
         this.category = category;
         this.isRootCategory = category.root;
+        
         if (category.parentId) {
           this.fetchParentCategory(category.parentId);
+        }
+        if(category.parentCategory) {
+          this.parentCategory = category.parentCategory[0];
         }
       },
       (error) => console.error('Error fetching category details', error)
