@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Input, Output, EventEmitter} from '@angular/core';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,8 @@ import { Router , ActivatedRoute} from '@angular/router';
   imports: [FormsModule, CommonModule]
 })
 export class CategoryFormComponent implements OnInit {
+  @Input() categoryId?: number;
+  @Output() formSubmit = new EventEmitter<void>();
   category: Category = new Category();
 
   constructor(
@@ -22,18 +24,15 @@ export class CategoryFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const id = params['id'];
-      if(id) {
-        console.log("id from URL is", id);
-       this.categoryService.getCategoryDetails(id).subscribe(
-        category => {
+    if (this.categoryId) {
+      this.categoryService.getCategoryDetails(this.categoryId).subscribe(
+        (category) => {
           this.category = category;
-          console.log("id is", this.category.id);
-        }
-       )
-      }
-    });
+          console.log("Catégorie chargée :", this.category);
+        },
+        (error) => console.error('Erreur lors du chargement de la catégorie', error)
+      );
+    }
   }
 
 
@@ -50,6 +49,7 @@ export class CategoryFormComponent implements OnInit {
         (response) => {
           console.log('Catégorie mise à jour avec succès', response);
           this.category = new Category();
+          this.formSubmit.emit();
           this.router.navigate(['/categories']);
         },
         (error) => {

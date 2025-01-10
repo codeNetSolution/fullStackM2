@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , LOCALE_ID } from '@angular/core';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; 
+import { CategoryDetailsComponent } from '../category-details/category-details.component';
+import { CategoryFormComponent } from '../category-form/category-form.component';
+
 
 @Component({
   selector: 'app-category-list',
   standalone: true,
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.css'],
-  imports: [CommonModule, FormsModule, RouterModule] 
+  imports: [CommonModule, FormsModule, RouterModule,CategoryDetailsComponent,CategoryFormComponent]
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
@@ -24,6 +27,16 @@ export class CategoryListComponent implements OnInit {
   isRootFilter?: boolean;
   noResultsFound: boolean = false;
   isModalOpen: boolean = false;
+  selectedCategory?: Category;
+  selectedCategoryId?: number;
+  isEditMode: boolean = false;
+  isDetailsModalOpen: boolean = false; 
+  isEditModalOpen: boolean = false;
+  afterDateFilter: string = '';
+  beforeDateFilter: string = '';
+  filteredChildren: Category[] = [];
+
+
 
   constructor(private categoryService: CategoryService, private router: Router) {}
 
@@ -38,11 +51,11 @@ export class CategoryListComponent implements OnInit {
 
   loadFilteredCategories(): void {
     this.categoryService
-      .getFilteredCategories(0, 10, this.nameFilter, this.creationDateFilter, this.isRootFilter)
+      .getFilteredCategories(this.page - 1, this.size, this.nameFilter, this.afterDateFilter, this.beforeDateFilter, this.creationDateFilter, this.isRootFilter)
       .subscribe(
         (categories) => {
           this.categories = categories;
-          console.log("categoris", categories)
+          this.updateFilteredChildren();
           this.noResultsFound = categories.length === 0;
         },
         (error) => {
@@ -53,6 +66,29 @@ export class CategoryListComponent implements OnInit {
       );
   }
 
+  updateFilteredChildren(): void {
+    if (this.selectedParentId) {
+        this.filteredChildren = this.categories.filter((category) => {
+            const exclude = Number(category.id) === Number(this.selectedParentId);
+            return !exclude;
+        });
+    } else {
+        this.filteredChildren = [...this.categories];
+    }
+}
+
+  onParentChange(): void {
+    this.updateFilteredChildren();
+  }
+  
+  resetFilters(): void {
+    this.nameFilter = '';
+    this.creationDateFilter = '';
+    this.afterDateFilter = '';
+    this.beforeDateFilter = '';
+    this.isRootFilter = undefined;
+    this.loadFilteredCategories();
+  }
   deleteCategory(id?: number): void {
     if (id !== undefined) {
       this.categoryService.deleteCategory(id).subscribe();
@@ -86,4 +122,43 @@ export class CategoryListComponent implements OnInit {
         });
     }
   }
+
+  openDetailsModal(categoryId: number): void {
+    this.selectedCategoryId = categoryId;
+    this.isDetailsModalOpen = true;
+  }
+
+  openEditModal(categoryId: number): void {
+    this.selectedCategoryId = categoryId;
+    this.isEditModalOpen = true;
+  }
+
+  closeDetailsModal(): void {
+    this.isDetailsModalOpen = false;
+    this.selectedCategoryId = undefined;
+  }
+  
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.selectedCategoryId = undefined;
+    this.loadFilteredCategories();
+  }
+
+  openCreateModal(): void {
+    this.selectedCategoryId = undefined;
+    this.isEditModalOpen = true; 
+  }
+  
+  goToPreviousPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadFilteredCategories();
+    }
+  }
+  
+  goToNextPage(): void {
+    this.page++;
+    this.loadFilteredCategories();
+  }
+  
 }

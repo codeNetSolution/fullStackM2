@@ -22,7 +22,15 @@ export class CategoryService {
     );
   }
 
-  getFilteredCategories(page: number, size: number, name?: string, creationDate?: string, isRoot?: boolean): Observable<Category[]> {
+  getFilteredCategories(
+    page: number,
+    size: number,
+    name?: string,
+    afterDate?: string,
+    beforeDate?: string,
+    creationDate?: string,
+    isRoot?: boolean
+  ): Observable<Category[]> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -30,23 +38,33 @@ export class CategoryService {
     if (name) {
       params = params.append('name', name);
     }
-    if (creationDate) {
-      params = params.append('creationDate', creationDate);
+    if (afterDate) {
+      params = params.append('afterDate', afterDate);
     }
-
-    if(isRoot !== undefined && isRoot !== null) {
-      params = params.append('isRoot', isRoot)
+    if (beforeDate) {
+      params = params.append('beforeDate', beforeDate);
+    }
+    if (creationDate) {
+      params = params.append('creationDate', creationDate)
+    }
+    if (isRoot !== undefined && isRoot !== null) {
+      params = params.append('isRoot', isRoot.toString());
     }
   
     return this.http.get<any>(`${this.apiUrl}/filtered`, { params }).pipe(
-      tap(data => {}),
-      map(data => data.content || []), 
-      catchError(error => {
+      map((data) => {
+        return (data.content || []).map((category: any) => ({
+          ...category,
+          creationDate: new Date(category.creationDate),
+        }));
+      }),
+      catchError((error) => {
         console.error('Error fetching filtered categories:', error);
-        return of([]); 
+        return of([]);
       })
     );
   }
+  
   
   
 
