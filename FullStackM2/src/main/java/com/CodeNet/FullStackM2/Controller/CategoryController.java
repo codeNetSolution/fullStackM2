@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,45 +28,29 @@ import java.util.stream.Collectors;
 @Tag(name = "Category Management", description = "API for managing categories")
 public class CategoryController {
 
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping("/filtered")
-    @Operation(
-            summary = "Récupérer les catégories paginées et filtrées",
-            description = "Retourne une liste paginée des catégories avec des filtres optionnels sur le nom, la date de création et le statut racine."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Liste récupérée avec succès"),
-            @ApiResponse(responseCode = "400", description = "Paramètres de requête invalides"),
-            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
-    })
     public ResponseEntity<PaginatedResponse<CategoryDTO>> getAllCategoriesPaginated(
-            @Parameter(description = "Numéro de page (index basé sur 0)", example = "0")
             @RequestParam("page") int page,
-
-            @Parameter(description = "Nombre d'éléments par page", example = "10")
             @RequestParam("size") int size,
-
-            @Parameter(description = "Filtrer par nom de catégorie (optionnel)", example = "Électronique")
             @RequestParam(value = "name", required = false) String nameFilter,
-
-            @Parameter(description = "Filtrer par date de création (optionnel, format: YYYY-MM-DD)", example = "2025-01-01")
-            @RequestParam(value = "creationDate", required = false) String dateFilter,
-
-            @Parameter(description = "Filtrer par statut racine (optionnel : 'true' ou 'false')", example = "true")
-            @RequestParam(value = "isRoot", required = false) @Nullable String isRootParam
+            @RequestParam(value = "afterDate", required = false) String afterDateFilter,
+            @RequestParam(value = "beforeDate", required = false) String beforeDateFilter,
+            @RequestParam(value = "creationDate", required = false) String creationDateFilter,
+            @RequestParam(value = "isRoot", required = false) String isRootParam
     ) {
-
         Boolean isRoot = null;
-
-        if ("true".equalsIgnoreCase(String.valueOf(isRootParam))) {
+        if ("true".equalsIgnoreCase(isRootParam)) {
             isRoot = true;
-        } else if ("false".equalsIgnoreCase(String.valueOf(isRootParam))) {
+        } else if ("false".equalsIgnoreCase(isRootParam)) {
             isRoot = false;
         }
 
-        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter, dateFilter, isRoot);
+        Page<CategoryDTO> categoryPage = categoryService.getAllCategoriesPaginated(page, size, nameFilter,
+                afterDateFilter, beforeDateFilter, creationDateFilter, isRoot);
 
         PaginatedResponse<CategoryDTO> response = new PaginatedResponse<>(
                 categoryPage.getContent(),
@@ -90,6 +76,7 @@ public class CategoryController {
     public ResponseEntity<ApiMessage<Category>> create(
             @Parameter(description = "Détails de la catégorie à créer", required = true)
             @RequestBody Category category) {
+        System.out.println("categorie details: " + category.toString());
         try {
             if (category.isRoot()) {
                 if (category.getParentID() != null) {
@@ -196,12 +183,9 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Catégorie non trouvée pour l'identifiant fourni"),
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
-    public ResponseEntity<CategoryDTO> getCategoryDetails(
-            @Parameter(description = "Identifiant de la catégorie à récupérer", required = true, example = "1")
-            @PathVariable Long id
-    ) {
-        CategoryDTO categoryDTO = categoryService.convertToDTO(categoryService.getCategoryDetails(id));
-        return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+    public ResponseEntity<CategoryDTO> getCategoryDetails(@PathVariable Long id) {
+        CategoryDTO categoryDTO = categoryService.getCategoryDetails(id);
+        return ResponseEntity.ok(categoryDTO);
     }
 
     @PutMapping("/{parentId}/associate/{childId}")

@@ -1,90 +1,46 @@
-<nav class="bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg">
-  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-    <!-- Logo -->
-    <a routerLink="/" class="text-3xl font-extrabold tracking-tight hover:opacity-90 transition">
+<nav class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white fixed w-full shadow-lg z-50">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="/" class="text-3xl font-bold tracking-wide hover:opacity-90 transition">
       GestionCatégories
     </a>
-
-    <!-- Menu (Desktop) -->
-    <ul class="hidden md:flex space-x-8 items-center">
+    <ul class="hidden md:flex space-x-8 text-lg font-medium">
       <li>
-        <a
-          routerLink="/"
-          class="text-lg font-medium hover:text-purple-200 transition duration-200"
-        >
+        <a href="/" class="hover:text-pink-300 transition">
           Accueil
         </a>
       </li>
       <li>
-        <a
-          routerLink="/categories"
-          class="text-lg font-medium hover:text-purple-200 transition duration-200"
-        >
+        <a href="/categories" class="hover:text-pink-300 transition">
           Catégories
         </a>
       </li>
-      <li>
-        <a
-          routerLink="/about"
-          class="text-lg font-medium hover:text-purple-200 transition duration-200"
-        >
-          À propos
-        </a>
-      </li>
-      <li>
-        <a
-          routerLink="/contact"
-          class="text-lg font-medium hover:text-purple-200 transition duration-200"
-        >
-          Contact
-        </a>
-      </li>
     </ul>
-
-    <!-- Bouton pour Mobile -->
     <button
-      class="md:hidden text-3xl focus:outline-none hover:text-purple-200 transition"
-      (click)="toggleMenu()"
+      class="md:hidden text-3xl focus:outline-none hover:text-pink-300 transition"
+      id="mobile-menu-toggle"
     >
       <i class="fas fa-bars"></i>
     </button>
   </div>
-
-  <!-- Menu Mobile -->
-  <div *ngIf="menuOpen" class="md:hidden bg-gradient-to-b from-blue-500 to-blue-600">
-    <ul class="flex flex-col space-y-4 py-4 px-6">
+  <div id="mobile-menu" class="hidden md:hidden bg-indigo-600 text-white">
+    <ul class="flex flex-col space-y-4 py-4 px-6 text-lg font-medium">
       <li>
-        <a
-          routerLink="/"
-          class="block text-lg font-medium hover:bg-blue-400 hover:bg-opacity-50 px-4 py-2 rounded transition duration-200"
-        >
+        <a href="/" class="hover:bg-purple-500 px-4 py-2 rounded transition">
           Accueil
         </a>
       </li>
       <li>
-        <a
-          routerLink="/categories"
-          class="block text-lg font-medium hover:bg-blue-400 hover:bg-opacity-50 px-4 py-2 rounded transition duration-200"
-        >
+        <a href="/categories" class="hover:bg-purple-500 px-4 py-2 rounded transition">
           Catégories
-        </a>
-      </li>
-      <li>
-        <a
-          routerLink="/about"
-          class="block text-lg font-medium hover:bg-blue-400 hover:bg-opacity-50 px-4 py-2 rounded transition duration-200"
-        >
-          À propos
-        </a>
-      </li>
-      <li>
-        <a
-          routerLink="/contact"
-          class="block text-lg font-medium hover:bg-blue-400 hover:bg-opacity-50 px-4 py-2 rounded transition duration-200"
-        >
-          Contact
         </a>
       </li>
     </ul>
   </div>
 </nav>
+
+<script>
+  document.getElementById("mobile-menu-toggle").addEventListener("click", () => {
+    const mobileMenu = document.getElementById("mobile-menu");
+    mobileMenu.classList.toggle("hidden");
+  });
+</script>
