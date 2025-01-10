@@ -51,7 +51,7 @@ export class CategoryListComponent implements OnInit {
 
   loadFilteredCategories(): void {
     this.categoryService
-      .getFilteredCategories(0, 10, this.nameFilter, this.afterDateFilter, this.beforeDateFilter, this.creationDateFilter,this.isRootFilter)
+      .getFilteredCategories(this.page - 1, this.size, this.nameFilter, this.afterDateFilter, this.beforeDateFilter, this.creationDateFilter, this.isRootFilter)
       .subscribe(
         (categories) => {
           this.categories = categories;
@@ -141,6 +141,7 @@ export class CategoryListComponent implements OnInit {
   closeEditModal(): void {
     this.isEditModalOpen = false;
     this.selectedCategoryId = undefined;
+    this.loadFilteredCategories();
   }
 
   openCreateModal(): void {
@@ -148,6 +149,16 @@ export class CategoryListComponent implements OnInit {
     this.isEditModalOpen = true; 
   }
   
-
+  goToPreviousPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadFilteredCategories();
+    }
+  }
+  
+  goToNextPage(): void {
+    this.page++;
+    this.loadFilteredCategories();
+  }
   
 }

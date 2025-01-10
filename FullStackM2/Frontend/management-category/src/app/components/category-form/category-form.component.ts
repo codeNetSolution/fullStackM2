@@ -1,4 +1,4 @@
-import { Component, OnInit , Input} from '@angular/core';
+import { Component, OnInit , Input, Output, EventEmitter} from '@angular/core';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { Router , ActivatedRoute} from '@angular/router';
 })
 export class CategoryFormComponent implements OnInit {
   @Input() categoryId?: number;
+  @Output() formSubmit = new EventEmitter<void>();
   category: Category = new Category();
 
   constructor(
@@ -48,6 +49,7 @@ export class CategoryFormComponent implements OnInit {
         (response) => {
           console.log('Catégorie mise à jour avec succès', response);
           this.category = new Category();
+          this.formSubmit.emit();
           this.router.navigate(['/categories']);
         },
         (error) => {

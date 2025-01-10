@@ -225,6 +225,7 @@
     <app-category-form
       *ngIf="selectedCategoryId"
       [categoryId]="selectedCategoryId"
+      (formSubmit)="closeEditModal()"
     ></app-category-form>
   </div>
 </div>
@@ -245,3 +246,25 @@
   </div>
 </div>
 
+<!-- Pagination Controls -->
+<div class="flex justify-center mt-6 space-x-4">
+  <button
+    (click)="goToPreviousPage()"
+    [disabled]="page === 1"
+    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 disabled:opacity-50"
+  >
+    Précédent
+  </button>
+
+  <span class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md">
+    Page {{ page }}
+  </span>
+
+  <button
+    (click)="goToNextPage()"
+    [disabled]="categories.length < size"
+    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 disabled:opacity-50"
+  >
+    Suivant
+  </button>
+</div>
