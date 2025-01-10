@@ -24,7 +24,6 @@ export class CategoryFormComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.categoryId) {
-      // Charger les détails de la catégorie si un ID est fourni
       this.categoryService.getCategoryDetails(this.categoryId).subscribe(
         (category) => {
           this.category = category;

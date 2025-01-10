@@ -1,4 +1,4 @@
-// category.model.ts
+
 export class Category {
   id?: number;
   nom: string;

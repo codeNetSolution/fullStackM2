@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col">
+<div class="min-h-screen bg-gray-50 flex flex-col pt-20">
     <!-- Bannière d'accueil -->
     <header class="bg-blue-500 text-white py-12">
       <div class="container mx-auto px-6 md:px-12 lg:px-20 text-center">
@@ -8,7 +8,7 @@
         </p>
         <button
           class="mt-6 px-8 py-3 bg-white text-blue-500 font-semibold rounded-full shadow-md hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-blue-300"
-          
+          onclick="window.location.href='/categories';"
         >
           Commencer
         </button>
@@ -33,24 +33,25 @@
         <!-- Fonctionnalité 2 -->
         <div class="bg-white shadow-md p-6 rounded-lg text-center">
           <div class="mb-4">
-            <i class="fas fa-chart-line text-green-500 text-4xl"></i>
+            <i class="fas fa-handshake text-green-500 text-4xl"></i>
           </div>
-          <h3 class="text-xl font-semibold text-gray-800">Rapports et Analyses</h3>
+          <h3 class="text-xl font-semibold text-gray-800">Simplicité d'utilisation</h3>
           <p class="text-gray-600 mt-2">
-            Visualisez vos données et suivez vos performances en temps réel.
+            Découvrez une plateforme intuitive, conçue pour faciliter la gestion de vos catégories.
           </p>
         </div>
-  
+
         <!-- Fonctionnalité 3 -->
         <div class="bg-white shadow-md p-6 rounded-lg text-center">
           <div class="mb-4">
-            <i class="fas fa-user-shield text-yellow-500 text-4xl"></i>
+            <i class="fas fa-lock text-yellow-500 text-4xl"></i>
           </div>
-          <h3 class="text-xl font-semibold text-gray-800">Sécurité et Contrôle</h3>
+          <h3 class="text-xl font-semibold text-gray-800">Sécurisation des catégories</h3>
           <p class="text-gray-600 mt-2">
-            Gérez les accès et protégez vos données sensibles.
+            Protégez vos données et garantissez un accès contrôlé à vos catégories.
           </p>
         </div>
+
       </div>
     </section>
   
@@ -60,91 +61,81 @@
         <h2 class="text-3xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
         <div class="flex flex-wrap justify-center gap-6">
           <button
-            class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
-            
-          >
-            + Nouvelle Catégorie
-          </button>
-          <button
             class="px-6 py-3 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300"
-            
+            onclick="window.location.href='/categories';"
           >
             Voir les Catégories
           </button>
-          <button
-            class="px-6 py-3 bg-purple-500 text-white font-semibold rounded-full shadow-md hover:bg-purple-600 focus:outline-none focus:ring-4 focus:ring-purple-300"
-            
-          >
-            Générer un Rapport
-          </button>
+          
         </div>
       </div>
     </section>
   
     <!-- Section des témoignages -->
-    <section class="container mx-auto px-6 md:px-12 lg:px-20 py-12 space-y-12">
+    <section class="container mx-auto px-6 md:px-12 lg:px-20 py-12 space-y-12 pt-16">
       <h2 class="text-3xl font-bold text-gray-900 text-center">Ce que disent nos utilisateurs</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Témoignage 1 -->
         <div class="bg-white shadow-md p-6 rounded-lg">
           <p class="text-gray-600 italic">
-            "La plateforme m'a aidé à organiser mes données efficacement. Un gain de temps incroyable !"
+            "J'utilise cette plateforme tous les jours pour gérer mes catégories. Tout est clair et facile à comprendre."
           </p>
           <div class="mt-4 flex items-center space-x-4">
             <img
-              src="https://via.placeholder.com/50"
+              src="icon2.png"
               alt="User"
               class="w-12 h-12 rounded-full"
             />
             <div>
-              <h4 class="text-gray-800 font-semibold">Alice Dupont</h4>
-              <p class="text-gray-500 text-sm">Gestionnaire de Projets</p>
+              <h4 class="text-gray-800 font-semibold">Sophie Leroy</h4>
+              <p class="text-gray-500 text-sm">Assistante Administrative</p>
             </div>
           </div>
         </div>
-  
+
         <!-- Témoignage 2 -->
         <div class="bg-white shadow-md p-6 rounded-lg">
           <p class="text-gray-600 italic">
-            "Les outils d'analyse m'ont permis de mieux comprendre mes données. Je recommande fortement !"
+            "Grâce à cet outil, j'ai pu gagner un temps précieux et éviter les erreurs dans la gestion de mes catégories"
           </p>
           <div class="mt-4 flex items-center space-x-4">
             <img
-              src="https://via.placeholder.com/50"
+              src="icon1.png"
               alt="User"
               class="w-12 h-12 rounded-full"
             />
             <div>
-              <h4 class="text-gray-800 font-semibold">Jean Martin</h4>
-              <p class="text-gray-500 text-sm">Analyste de Données</p>
+              <h4 class="text-gray-800 font-semibold">Marc Dubois</h4>
+              <p class="text-gray-500 text-sm">Entrepreneur</p>
             </div>
           </div>
         </div>
-  
+
         <!-- Témoignage 3 -->
         <div class="bg-white shadow-md p-6 rounded-lg">
           <p class="text-gray-600 italic">
-            "Un outil indispensable pour la gestion de mes projets complexes. Interface simple et intuitive."
+            "C'est simple : je ne pourrais plus m'en passer. La gestion de mes catégories est devenue un jeu d'enfant."
           </p>
           <div class="mt-4 flex items-center space-x-4">
             <img
-              src="https://via.placeholder.com/50"
+              src="icon2.png"
               alt="User"
               class="w-12 h-12 rounded-full"
             />
             <div>
-              <h4 class="text-gray-800 font-semibold">Claire Morel</h4>
-              <p class="text-gray-500 text-sm">Chef de Projet</p>
+              <h4 class="text-gray-800 font-semibold">Élodie Charpentier</h4>
+              <p class="text-gray-500 text-sm">Consultante</p>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   
     <!-- Pied de page -->
     <footer class="bg-gray-800 text-white py-6">
       <div class="container mx-auto text-center">
-        <p>&copy; 2025 Plateforme de Gestion des Catégories. Tous droits réservés.</p>
+        <p>&copy; 2025 Plateforme de Gestion des Catégories. Tous droits réservés(Abdelkrim SAIDOUN M2 GIL).</p>
       </div>
     </footer>
   </div>

@@ -3,11 +3,12 @@ import { NgModule } from '@angular/core';
 import { CategoryListComponent } from './components/category-list/category-list.component';
 import { CategoryFormComponent } from './components/category-form/category-form.component';
 import { CategoryDetailsComponent } from './components/category-details/category-details.component';
+import { HomePageComponent } from './page/home-page/home-page.component';
 
 
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/categories', pathMatch:'full'},
+    { path: '', component: HomePageComponent},
     { path: 'categories', component: CategoryListComponent},
     { path: 'category/new', component: CategoryFormComponent},
     { path: 'category/edit/:id', component: CategoryFormComponent},
